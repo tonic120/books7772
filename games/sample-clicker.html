@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sample Clicker</title>
+  <style>
+    :root {
+      --background: #07111f;
+      --surface: #13233a;
+      --text: #f7fbff;
+      --muted: #a8b7cb;
+      --accent: #63e6be;
+      --border: rgba(255, 255, 255, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(99, 230, 190, 0.18), transparent 28rem),
+        var(--background);
+    }
+
+    main {
+      width: min(560px, 100%);
+      padding: clamp(1.2rem, 5vw, 2rem);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: rgba(19, 35, 58, 0.82);
+      text-align: center;
+    }
+
+    a {
+      color: var(--accent);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    h1 {
+      margin: 0 0 0.5rem;
+      font-size: clamp(2.2rem, 10vw, 4rem);
+      line-height: 0.95;
+    }
+
+    p { color: var(--muted); }
+
+    .score {
+      margin: 1.2rem 0;
+      font-size: clamp(3rem, 16vw, 6rem);
+      font-weight: 900;
+      color: var(--accent);
+    }
+
+    button {
+      width: 100%;
+      min-height: 58px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #042018;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 900;
+    }
+
+    button:active { transform: translateY(2px); }
+  </style>
+</head>
+<body>
+  <main>
+    <a href="../index.html">Back to games</a>
+    <h1>Sample Clicker</h1>
+    <p>This is just a placeholder game. Replace this file with one of your own games.</p>
+    <div class="score" id="score">0</div>
+    <button id="clickButton" type="button">Click for points</button>
+  </main>
+
+  <script>
+    let score = 0;
+    const scoreDisplay = document.querySelector("#score");
+    const clickButton = document.querySelector("#clickButton");
+
+    clickButton.addEventListener("click", () => {
+      score += 1;
+      scoreDisplay.textContent = score;
+    });
+  </script>
+</body>
+</html>
