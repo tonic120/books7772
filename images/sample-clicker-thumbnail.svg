@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Sample Clicker thumbnail</title>
+  <desc id="desc">Blue arcade style thumbnail for the Sample Clicker game.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#071426"/>
+      <stop offset="1" stop-color="#0f3770"/>
+    </linearGradient>
+    <linearGradient id="button" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#76d1ff"/>
+      <stop offset="1" stop-color="#1677e8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="1030" cy="120" r="210" fill="#4aa3ff" opacity="0.18"/>
+  <circle cx="210" cy="620" r="280" fill="#76d1ff" opacity="0.12"/>
+  <rect x="170" y="150" width="940" height="420" rx="34" fill="#0d1b2f" stroke="#7bbdff" stroke-opacity="0.35" stroke-width="4"/>
+  <rect x="430" y="255" width="420" height="160" rx="28" fill="url(#button)"/>
+  <text x="640" y="354" text-anchor="middle" fill="#03111f" font-family="Arial, Helvetica, sans-serif" font-size="62" font-weight="900">CLICK</text>
+  <text x="640" y="488" text-anchor="middle" fill="#f6fbff" font-family="Arial, Helvetica, sans-serif" font-size="52" font-weight="900">Sample Clicker</text>
+  <text x="640" y="540" text-anchor="middle" fill="#9db4cf" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700">Playable demo slot</text>
+</svg>

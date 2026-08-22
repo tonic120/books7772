@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Browse games on Books777 Arcade.">
+  <title>Games | Books777 Arcade</title>
+  <style>
+    :root {
+      --background: #050b16;
+      --surface: #0d1b2f;
+      --surface-strong: #10233f;
+      --text: #f6fbff;
+      --muted: #9db4cf;
+      --accent: #4aa3ff;
+      --line: rgba(174, 210, 255, 0.16);
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+    }
+
+    body.light {
+      --background: #eef6ff;
+      --surface: #ffffff;
+      --surface-strong: #ddecff;
+      --text: #0c1726;
+      --muted: #50637a;
+      --accent: #126ee2;
+      --line: rgba(13, 43, 86, 0.16);
+      --shadow: 0 18px 55px rgba(34, 76, 128, 0.16);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 15% 2%, rgba(74, 163, 255, 0.24), transparent 30rem),
+        var(--background);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; }
+
+    .container {
+      width: min(1120px, calc(100% - 2rem));
+      margin-inline: auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--background) 82%, transparent);
+      backdrop-filter: blur(18px);
+    }
+
+    .nav {
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 1.05rem;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #03111f;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--text); }
+
+    .theme-toggle,
+    .button {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--surface) 82%, transparent);
+      color: var(--text);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 850;
+      text-decoration: none;
+      transition: transform 160ms ease, border-color 160ms ease;
+    }
+
+    .theme-toggle { padding: 0.58rem 0.82rem; }
+    .button { padding: 0.72rem 1rem; }
+
+    .theme-toggle:hover,
+    .button:hover {
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--accent) 56%, var(--line));
+    }
+
+    .button.primary {
+      border-color: transparent;
+      background: var(--accent);
+      color: #03111f;
+    }
+
+    main { padding: 4rem 0; }
+
+    .page-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0.35rem 0 0;
+      font-size: clamp(2.8rem, 8vw, 5.4rem);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+    }
+
+    .page-heading p {
+      max-width: 580px;
+      margin: 0.9rem 0 0;
+      color: var(--muted);
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .game-card {
+      display: grid;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      color: var(--text);
+      text-decoration: none;
+      box-shadow: var(--shadow);
+      transition: transform 160ms ease, border-color 160ms ease;
+    }
+
+    .game-card:hover {
+      transform: translateY(-4px);
+      border-color: color-mix(in srgb, var(--accent) 62%, var(--line));
+    }
+
+    .game-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-strong);
+    }
+
+    .game-body { padding: 1rem; }
+
+    .game-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .pill {
+      padding: 0.22rem 0.55rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--accent);
+      font-size: 0.74rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .game-card h2 {
+      margin: 0;
+      font-size: 1.45rem;
+      line-height: 1.1;
+    }
+
+    .game-card p { margin: 0.55rem 0 1rem; color: var(--muted); }
+
+    .game-action {
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .add-panel {
+      margin-top: 1rem;
+      padding: 1.2rem;
+      border: 1px dashed color-mix(in srgb, var(--accent) 50%, var(--line));
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--surface) 76%, transparent);
+    }
+
+    .add-panel h2 { margin: 0 0 0.45rem; }
+    .add-panel p { margin: 0; color: var(--muted); }
+    code { color: var(--accent); }
+
+    footer {
+      padding: 2rem 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 920px) {
+      .games-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 700px) {
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 0.9rem 0;
+      }
+
+      .nav-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .nav-links {
+        overflow-x: auto;
+        padding-bottom: 0.2rem;
+      }
+
+      .nav-links a { white-space: nowrap; }
+      .page-heading { align-items: flex-start; flex-direction: column; }
+      .games-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="container nav" aria-label="Main navigation">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">B7</span>
+        <span>Books777 Arcade</span>
+      </a>
+      <div class="nav-actions">
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a class="active" href="games.html">Games</a></li>
+        </ul>
+        <button class="theme-toggle" type="button" data-theme-toggle>Light mode</button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="page-heading">
+        <div>
+          <div class="eyebrow">Game library</div>
+          <h1>Games</h1>
+          <p>Every game gets its own card, picture, tags, and launch button. Add new game files in the <code>games</code> folder and keep the menu clean here.</p>
+        </div>
+        <a class="button primary" href="play.html?game=sample-clicker.html&title=Sample%20Clicker">Play featured</a>
+      </div>
+
+      <section class="games-grid" aria-label="Available games">
+        <!--
+          ADD A GAME:
+          1. Put your game file in /games, for example /games/my-game.html.
+          2. Put your picture in /images, for example /images/my-game.png.
+          3. Duplicate this card and update href, img src, title, tags, and description.
+        -->
+        <a class="game-card" href="play.html?game=sample-clicker.html&title=Sample%20Clicker">
+          <img class="game-thumb" src="images/sample-clicker-thumbnail.svg" alt="Sample Clicker thumbnail">
+          <div class="game-body">
+            <div class="game-meta">
+              <span class="pill">Clicker</span>
+              <span class="pill">Demo</span>
+            </div>
+            <h2>Sample Clicker</h2>
+            <p>A small playable example showing how games launch inside the site player.</p>
+            <span class="game-action">Launch game</span>
+          </div>
+        </a>
+
+        <a class="game-card" href="#" aria-label="Empty game card template">
+          <img class="game-thumb" src="images/game-placeholder.svg" alt="Empty game slot thumbnail">
+          <div class="game-body">
+            <div class="game-meta">
+              <span class="pill">New</span>
+              <span class="pill">Slot</span>
+            </div>
+            <h2>Your Next Game</h2>
+            <p>Replace this card with your next uploaded HTML game and thumbnail.</p>
+            <span class="game-action">Add game link</span>
+          </div>
+        </a>
+      </section>
+
+      <aside class="add-panel">
+        <h2>Quick add pattern</h2>
+        <p>Use <code>href="play.html?game=my-game.html&amp;title=My%20Game"</code> on the card, put the game at <code>games/my-game.html</code>, and put the picture at <code>images/my-game.png</code>.</p>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">&copy; <span id="year"></span> Books777 Arcade</div>
+  </footer>
+
+  <script>
+    const themeButton = document.querySelector("[data-theme-toggle]");
+    const savedTheme = localStorage.getItem("books777-theme");
+
+    if (savedTheme === "light") {
+      document.body.classList.add("light");
+    }
+
+    function updateThemeButton() {
+      const isLight = document.body.classList.contains("light");
+      themeButton.textContent = isLight ? "Dark mode" : "Light mode";
+    }
+
+    themeButton.addEventListener("click", () => {
+      document.body.classList.toggle("light");
+      localStorage.setItem("books777-theme", document.body.classList.contains("light") ? "light" : "dark");
+      updateThemeButton();
+    });
+
+    updateThemeButton();
+    document.querySelector("#year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

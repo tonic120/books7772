@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Play a game on Books777 Arcade.">
+  <title>Play | Books777 Arcade</title>
+  <style>
+    :root {
+      --background: #050b16;
+      --surface: #0d1b2f;
+      --surface-strong: #10233f;
+      --text: #f6fbff;
+      --muted: #9db4cf;
+      --accent: #4aa3ff;
+      --line: rgba(174, 210, 255, 0.16);
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+    }
+
+    body.light {
+      --background: #eef6ff;
+      --surface: #ffffff;
+      --surface-strong: #ddecff;
+      --text: #0c1726;
+      --muted: #50637a;
+      --accent: #126ee2;
+      --line: rgba(13, 43, 86, 0.16);
+      --shadow: 0 18px 55px rgba(34, 76, 128, 0.16);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--background);
+    }
+
+    .game-frame {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      border: 0;
+      background: #000;
+    }
+
+    .edge-zone {
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 6;
+      width: 24px;
+    }
+
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 7;
+      width: min(300px, calc(100vw - 2rem));
+      padding: 1rem;
+      border-right: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 94%, transparent);
+      box-shadow: var(--shadow);
+      transform: translateX(calc(-100% + 18px));
+      transition: transform 180ms ease;
+    }
+
+    .edge-zone:hover + .sidebar,
+    .sidebar:hover,
+    .sidebar:focus-within {
+      transform: translateX(0);
+    }
+
+    .handle {
+      position: absolute;
+      top: 50%;
+      right: -42px;
+      display: grid;
+      width: 42px;
+      height: 96px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-left: 0;
+      border-radius: 0 8px 8px 0;
+      background: var(--surface);
+      color: var(--accent);
+      font-size: 0.76rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transform: translateY(-50%);
+      writing-mode: vertical-rl;
+    }
+
+    .sidebar h1 {
+      margin: 0.4rem 0 0.6rem;
+      font-size: 2rem;
+      line-height: 1;
+      letter-spacing: -0.05em;
+    }
+
+    .sidebar p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .kicker {
+      color: var(--accent);
+      font-size: 0.76rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .menu {
+      display: grid;
+      gap: 0.7rem;
+      margin-top: 1.4rem;
+    }
+
+    .menu a,
+    .theme-toggle {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-strong);
+      color: var(--text);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 850;
+      text-decoration: none;
+    }
+
+    .menu a.primary {
+      border-color: transparent;
+      background: var(--accent);
+      color: #03111f;
+    }
+
+    .hint {
+      margin-top: 1.2rem;
+      padding: 0.8rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--surface-strong) 76%, transparent);
+      font-size: 0.92rem;
+    }
+
+    .error {
+      display: none;
+      position: fixed;
+      inset: 0;
+      place-items: center;
+      padding: 1rem;
+      text-align: center;
+      background: var(--background);
+    }
+
+    .error-card {
+      width: min(560px, 100%);
+      padding: 1.4rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+  </style>
+</head>
+<body>
+  <iframe class="game-frame" id="gameFrame" title="Game player"></iframe>
+
+  <div class="edge-zone" aria-hidden="true"></div>
+  <aside class="sidebar" aria-label="Game menu">
+    <div class="handle">Menu</div>
+    <div class="kicker">Now playing</div>
+    <h1 id="gameTitle">Game</h1>
+    <p>Move your mouse to the left edge at any time to open this menu.</p>
+    <nav class="menu" aria-label="Player actions">
+      <a class="primary" href="games.html">Back to games</a>
+      <a href="index.html">Home</a>
+      <button class="theme-toggle" type="button" data-theme-toggle>Light mode</button>
+    </nav>
+    <div class="hint">Add more games by linking cards in <strong>games.html</strong> to this player page.</div>
+  </aside>
+
+  <section class="error" id="errorView" aria-live="polite">
+    <div class="error-card">
+      <h1>Game could not load</h1>
+      <p>Use a simple file name like <strong>my-game.html</strong> and put it inside the games folder.</p>
+      <p><a href="games.html">Back to games</a></p>
+    </div>
+  </section>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const requestedGame = params.get("game") || "sample-clicker.html";
+    const requestedTitle = params.get("title") || "Sample Clicker";
+    const validGameName = /^[a-z0-9][a-z0-9._-]*\.html$/i.test(requestedGame);
+    const frame = document.querySelector("#gameFrame");
+    const errorView = document.querySelector("#errorView");
+    const themeButton = document.querySelector("[data-theme-toggle]");
+
+    if (validGameName) {
+      frame.src = `games/${requestedGame}`;
+      document.querySelector("#gameTitle").textContent = requestedTitle;
+      document.title = `${requestedTitle} | Books777 Arcade`;
+    } else {
+      frame.style.display = "none";
+      errorView.style.display = "grid";
+    }
+
+    const savedTheme = localStorage.getItem("books777-theme");
+
+    if (savedTheme === "light") {
+      document.body.classList.add("light");
+    }
+
+    function updateThemeButton() {
+      const isLight = document.body.classList.contains("light");
+      themeButton.textContent = isLight ? "Dark mode" : "Light mode";
+    }
+
+    themeButton.addEventListener("click", () => {
+      document.body.classList.toggle("light");
+      localStorage.setItem("books777-theme", document.body.classList.contains("light") ? "light" : "dark");
+      updateThemeButton();
+    });
+
+    updateThemeButton();
+  </script>
+</body>
+</html>

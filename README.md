@@ -1,67 +1,63 @@
-# books777.ra3.us starter website
+# Books777 Arcade
 
 This folder is ready to publish with GitHub Pages. The `CNAME` file already contains `books777.ra3.us`.
 
-## 1. Create the repository
+## Site files
 
-1. Sign in to GitHub and choose **New repository**.
-2. Name it `books777-site` (or any name you prefer).
-3. Set it to **Public** and create it.
-4. Choose **Add file → Upload files**.
-5. Upload the *contents* of this folder: `index.html`, `CNAME`, `.nojekyll`, and `README.md`.
-6. Commit the files to the `main` branch.
-
-## 2. Turn on GitHub Pages
-
-1. Open the repository's **Settings → Pages**.
-2. Under **Build and deployment**, choose **Deploy from a branch**.
-3. Select `main` and `/(root)`, then choose **Save**.
-4. Under **Custom domain**, enter `books777.ra3.us` and save it. If it is already shown because of the `CNAME` file, leave it in place.
-
-## 3. Point FreeDNS at GitHub
-
-In FreeDNS, open **Subdomains** and create or edit this record:
-
-| Field | Value |
+| File or folder | What it does |
 | --- | --- |
-| Type | `CNAME` |
-| Subdomain/Host | `books777` |
-| Domain | `ra3.us` |
-| Destination | `YOUR-GITHUB-USERNAME.github.io` |
+| `index.html` | Main home page for Books777 Arcade. |
+| `games.html` | Dedicated games menu with game cards and pictures. |
+| `play.html` | Game player page with the hover sidebar menu. |
+| `games/` | Put your HTML game files here. |
+| `images/` | Put game thumbnails or pictures here. |
+| `CNAME` | Keeps the custom domain connected to GitHub Pages. |
 
-Replace `YOUR-GITHUB-USERNAME` with your exact GitHub username. Do not include `https://`, a slash, or the repository name.
+## Add a new game
 
-If FreeDNS shows the full hostname in a single field, use `books777.ra3.us`.
-
-## 4. Finish HTTPS
-
-Return to **GitHub → repository Settings → Pages**. Wait for the DNS check to succeed, then enable **Enforce HTTPS**. DNS and the certificate can take time to finish updating.
-
-## Customize the page
-
-Edit `index.html`. Search for `EDIT:` to find the main text and links. The colors are grouped near the top under `:root`.
-
-## Add games to the Games tab
-
-1. Put each game HTML file inside the `games` folder.
-2. Open `index.html`.
-3. Find the `Games` section.
+1. Put your game file in the `games` folder.
+   Example: `games/my-game.html`
+2. Put your picture in the `images` folder.
+   Example: `images/my-game.png`
+3. Open `games.html`.
 4. Duplicate one of the `<a class="game-card">` blocks.
-5. Change the `href` to your game file, like `games/my-game.html`.
-6. Change the title and description shown on the card.
+5. Change the card link, image, title, tags, and description.
 
-Example:
+Example card:
 
 ```html
-<a class="game-card" href="games/my-game.html">
-  <div>
-    <span class="game-kicker">New game</span>
-    <h3>My Game</h3>
+<a class="game-card" href="play.html?game=my-game.html&title=My%20Game">
+  <img class="game-thumb" src="images/my-game.png" alt="My Game thumbnail">
+  <div class="game-body">
+    <div class="game-meta">
+      <span class="pill">Action</span>
+      <span class="pill">HTML</span>
+    </div>
+    <h2>My Game</h2>
     <p>A short description of the game.</p>
-  </div>
-  <div class="game-footer">
-    <span>HTML</span>
-    <span>Play now</span>
+    <span class="game-action">Launch game</span>
   </div>
 </a>
 ```
+
+Use a simple file name for games, like `my-game.html`. The player page accepts game files inside the `games` folder.
+
+## Game sidebar
+
+Game cards should open through `play.html`, like this:
+
+```html
+play.html?game=my-game.html&title=My%20Game
+```
+
+That loads the game inside the player page. When the mouse moves to the left side of the screen, the sidebar opens with links back to the games menu and home page.
+
+## Light and dark mode
+
+The site starts in dark mode with blue accents. Visitors can press the light mode button, and the choice is remembered on their device.
+
+## Publish updates
+
+Upload the contents of this folder to your GitHub repository and commit the changes. GitHub Pages will rebuild the site automatically.
+
+If you add new game or image files later, upload those new files and the edited `games.html`.
