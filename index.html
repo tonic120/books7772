@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A simple customizable website hosted with GitHub Pages.">
+  <title>Your Website</title>
+  <style>
+    /* QUICK CUSTOMIZATION: change these colors to restyle the whole page. */
+    :root {
+      --background: #07111f;
+      --surface: rgba(19, 35, 58, 0.78);
+      --text: #f7fbff;
+      --muted: #a8b7cb;
+      --accent: #63e6be;
+      --accent-dark: #1aa981;
+      --border: rgba(255, 255, 255, 0.12);
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(99, 230, 190, 0.18), transparent 32rem),
+        radial-gradient(circle at 90% 35%, rgba(99, 158, 255, 0.15), transparent 28rem),
+        var(--background);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; }
+
+    .container {
+      width: min(1080px, calc(100% - 2rem));
+      margin-inline: auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--border);
+      background: rgba(7, 17, 31, 0.78);
+      backdrop-filter: blur(18px);
+    }
+
+    .nav {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-weight: 850;
+      letter-spacing: -0.04em;
+      text-decoration: none;
+      font-size: 1.15rem;
+    }
+
+    .logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 1.25rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .hero {
+      min-height: 74vh;
+      display: grid;
+      place-items: center;
+      padding: 6rem 0 4rem;
+      text-align: center;
+    }
+
+    .hero-content { max-width: 780px; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.42rem 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--accent);
+      background: rgba(255, 255, 255, 0.04);
+      font-weight: 800;
+      font-size: 0.86rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 1.2rem 0 1rem;
+      font-size: clamp(3rem, 10vw, 6.5rem);
+      line-height: 0.95;
+      letter-spacing: -0.07em;
+    }
+
+    .hero p {
+      max-width: 640px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.8rem;
+      margin-top: 2rem;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0.72rem 1.1rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      font-weight: 800;
+      text-decoration: none;
+      transition: transform 160ms ease, background 160ms ease;
+    }
+
+    .button:hover { transform: translateY(-2px); }
+    .button.primary {
+      border-color: transparent;
+      background: var(--accent);
+      color: #042018;
+    }
+
+    .button.primary:hover { background: #83f3d2; }
+
+    section { padding: 4.5rem 0; }
+
+    .section-heading {
+      max-width: 680px;
+      margin-bottom: 1.8rem;
+    }
+
+    .section-heading h2 {
+      margin: 0 0 0.5rem;
+      font-size: clamp(2rem, 5vw, 3rem);
+      letter-spacing: -0.045em;
+    }
+
+    .section-heading p { margin: 0; color: var(--muted); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .card {
+      min-height: 190px;
+      padding: 1.35rem;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .card-number {
+      color: var(--accent);
+      font-weight: 900;
+      font-size: 0.85rem;
+    }
+
+    .card h3 { margin: 0.8rem 0 0.45rem; }
+    .card p { margin: 0; color: var(--muted); }
+
+    .contact-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      padding: clamp(1.5rem, 5vw, 3rem);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(99, 230, 190, 0.12), rgba(99, 158, 255, 0.08));
+    }
+
+    .contact-box h2 { margin: 0; letter-spacing: -0.04em; }
+    .contact-box p { margin: 0.3rem 0 0; color: var(--muted); }
+
+    footer {
+      padding: 2.5rem 0;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      .grid { grid-template-columns: 1fr; }
+      .contact-box { align-items: flex-start; flex-direction: column; }
+      .nav-links li:not(:last-child) { display: none; }
+      .hero { min-height: 66vh; padding-top: 4rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="container nav" aria-label="Main navigation">
+      <!-- EDIT: Replace this with your website name. -->
+      <a class="logo" href="#top">YOUR<span>SITE</span></a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#highlights">Highlights</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-content">
+        <div class="eyebrow">Now live on the web</div>
+        <!-- EDIT: Change this headline and paragraph. -->
+        <h1>Build something awesome.</h1>
+        <p>This is your blank starter website. Replace the words, colors, links, and sections with anything you want.</p>
+        <div class="actions">
+          <a class="button primary" href="#about">Explore the page</a>
+          <!-- EDIT: Put your real link in the href below. -->
+          <a class="button" href="https://github.com/" target="_blank" rel="noreferrer">My GitHub</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="container">
+        <div class="section-heading">
+          <h2>About this site</h2>
+          <p>Use this space for a short introduction, a project description, or anything else visitors should know.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="highlights">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Highlights</h2>
+          <p>These cards can become projects, features, announcements, games, or links.</p>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <div class="card-number">01</div>
+            <h3>First item</h3>
+            <p>Replace this description with your own content.</p>
+          </article>
+          <article class="card">
+            <div class="card-number">02</div>
+            <h3>Second item</h3>
+            <p>Add a project, feature, update, or important link here.</p>
+          </article>
+          <article class="card">
+            <div class="card-number">03</div>
+            <h3>Third item</h3>
+            <p>Duplicate or remove cards whenever you want.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container">
+        <div class="contact-box">
+          <div>
+            <h2>Want to add something here?</h2>
+            <p>Turn this into an email button, social link, or call to action.</p>
+          </div>
+          <!-- EDIT: Replace the email address. -->
+          <a class="button primary" href="mailto:you@example.com">Contact me</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">© <span id="year"></span> Your Website</div>
+  </footer>
+
+  <script>
+    document.querySelector("#year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
