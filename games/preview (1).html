@@ -1,0 +1,3128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Clash of Domers Deluxe</title>
+<style>
+:root {
+  --bg: #07131f;
+  --panel: #102338;
+  --panel-2: #18334f;
+  --line: rgba(255,255,255,.14);
+  --text: #f6fbff;
+  --muted: #9db1c7;
+  --gold: #ffd166;
+  --blue: #36a3ff;
+  --red: #ff5c66;
+  --green: #38d989;
+  --purple: #c46cff;
+  --shadow: 0 18px 40px rgba(0,0,0,.38);
+}
+* { box-sizing: border-box; }
+html, body { width: 100%; height: 100%; }
+body {
+  margin: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(54,163,255,.22), transparent 26rem),
+    radial-gradient(circle at 80% 100%, rgba(255,209,102,.18), transparent 24rem),
+    linear-gradient(145deg, #07131f, #0c1a2b 58%, #09111c);
+  color: var(--text);
+  font-family: Inter, ui-rounded, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  user-select: none;
+  touch-action: none;
+}
+button, input, textarea { font: inherit; }
+button {
+  border: 0;
+  color: var(--text);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+button:active { transform: translateY(1px); }
+.screen {
+  position: fixed;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  padding: 18px 18px 88px;
+}
+.screen.active { display: flex; }
+.topbar {
+  width: min(1040px, 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.brand { display: flex; flex-direction: column; gap: 4px; }
+.eyebrow {
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+h1, h2, h3 { margin: 0; }
+h1 {
+  font-size: clamp(42px, 8vw, 82px);
+  line-height: .88;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  text-shadow: 0 5px 0 rgba(0,0,0,.42), 0 18px 34px rgba(0,0,0,.35);
+}
+h2 { font-size: clamp(28px, 5vw, 46px); }
+.muted { color: var(--muted); }
+.menu-shell {
+  width: min(1040px, 100%);
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  align-items: stretch;
+  gap: 22px;
+  min-height: 0;
+  overflow: hidden;
+}
+.hero-card, .panel {
+  background: linear-gradient(180deg, rgba(24,51,79,.94), rgba(12,28,46,.96));
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+.hero-card {
+  padding: clamp(20px, 4vw, 36px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.arena-preview {
+  position: relative;
+  height: 250px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px) 0 0 / 52px 52px,
+    linear-gradient(#4b944c, #3c7f42);
+}
+.arena-preview:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 47%;
+  height: 38px;
+  background: #2b91d1;
+  box-shadow: inset 0 6px rgba(255,255,255,.16), inset 0 -8px rgba(0,0,0,.12);
+}
+.arena-preview:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 72%, #36a3ff 0 22px, transparent 23px),
+    radial-gradient(circle at 82% 72%, #36a3ff 0 22px, transparent 23px),
+    radial-gradient(circle at 50% 84%, #36a3ff 0 34px, transparent 35px),
+    radial-gradient(circle at 18% 22%, #ff5c66 0 22px, transparent 23px),
+    radial-gradient(circle at 82% 22%, #ff5c66 0 22px, transparent 23px),
+    radial-gradient(circle at 50% 10%, #ff5c66 0 34px, transparent 35px);
+}
+.preview-unit {
+  position: absolute;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(7,19,31,.72);
+  border: 2px solid rgba(255,255,255,.24);
+  box-shadow: 0 12px 24px rgba(0,0,0,.32);
+  font-size: 28px;
+}
+.preview-unit.u1 { left: 34%; top: 58%; animation: bob 1.6s ease-in-out infinite; }
+.preview-unit.u2 { left: 53%; top: 34%; animation: bob 1.6s ease-in-out .25s infinite; }
+.preview-unit.u3 { left: 64%; top: 56%; animation: bob 1.6s ease-in-out .45s infinite; }
+@keyframes bob { 50% { transform: translateY(-8px); } }
+.stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.chip {
+  min-height: 38px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 900;
+}
+.menu-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.btn {
+  min-height: 46px;
+  padding: 11px 14px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #2a527e, #18334f);
+  border: 1px solid rgba(255,255,255,.15);
+  font-weight: 950;
+  text-transform: uppercase;
+  box-shadow: 0 7px 0 rgba(0,0,0,.22), 0 14px 24px rgba(0,0,0,.26);
+}
+.btn.primary { background: linear-gradient(180deg, #ffe08a, #f1a92c); color: #251a04; }
+.btn.red { background: linear-gradient(180deg, #ff737b, #bc2431); }
+.btn.green { background: linear-gradient(180deg, #48e69a, #17965c); }
+.btn.purple { background: linear-gradient(180deg, #d992ff, #8144d8); }
+.btn.story { grid-column: 1 / -1; background: linear-gradient(180deg, #68e0ff, #2670c9); }
+.btn.small {
+  min-height: 36px;
+  padding: 8px 10px;
+  font-size: 12px;
+  box-shadow: none;
+}
+.side-stack {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+  scrollbar-gutter: stable;
+}
+.hero-card::-webkit-scrollbar,
+.side-stack::-webkit-scrollbar { width: 10px; }
+.hero-card::-webkit-scrollbar-track,
+.side-stack::-webkit-scrollbar-track {
+  background: rgba(0,0,0,.18);
+  border-radius: 999px;
+}
+.hero-card::-webkit-scrollbar-thumb,
+.side-stack::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,.24);
+  border-radius: 999px;
+  border: 2px solid rgba(7,19,31,.8);
+}
+.panel {
+  padding: 16px;
+  min-height: 0;
+}
+.panel-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.rank-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: center;
+}
+.rank-badge {
+  width: 66px;
+  height: 66px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, #ffd166, #d88a17);
+  color: #1a1307;
+  font-size: 30px;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.2);
+}
+.progress {
+  height: 10px;
+  overflow: hidden;
+  background: rgba(0,0,0,.3);
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+}
+.progress > span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--gold), #fff0b6);
+}
+.quest-list {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.quest-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  font-size: 13px;
+}
+.back-row {
+  width: min(1040px, 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.work-area {
+  width: min(1040px, 100%);
+  min-height: 0;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.work-area.single { grid-template-columns: 1fr; }
+.scroll-panel {
+  min-height: 0;
+  overflow: auto;
+  padding-right: 4px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 10px;
+}
+.chapter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+}
+.chapter-card {
+  min-height: 230px;
+  padding: 14px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(42,82,126,.95), rgba(15,35,56,.96));
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: 0 12px 24px rgba(0,0,0,.25);
+  display: grid;
+  align-content: space-between;
+  gap: 12px;
+}
+.chapter-card.locked { opacity: .55; filter: grayscale(.7); }
+.chapter-num {
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.chapter-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.35; }
+.story-prologue {
+  width: min(1040px, 100%);
+  margin-bottom: 12px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  color: var(--muted);
+  line-height: 1.45;
+}
+.rival-list, .event-grid {
+  display: grid;
+  gap: 10px;
+}
+.rival-row, .event-card, .league-card {
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  display: grid;
+  gap: 10px;
+}
+.rival-row {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+}
+.avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, #ffe08a, #d88a17);
+  color: #1a1307;
+  font-weight: 950;
+}
+.rival-meta {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+.rival-name {
+  font-weight: 950;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tag {
+  display: inline-flex;
+  width: max-content;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.1);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+}
+.tag.friend { color: #113018; background: #8df5b9; }
+.rival-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.event-card {
+  min-height: 180px;
+  align-content: space-between;
+}
+.event-card.locked { opacity: .55; filter: grayscale(.7); }
+.event-card p, .league-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.35; }
+.league-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+}
+.card-tile {
+  position: relative;
+  min-height: 128px;
+  padding: 10px 8px 9px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #2a496d, #152a41);
+  border: 1px solid rgba(255,255,255,.14);
+  color: var(--text);
+  box-shadow: inset 0 1px rgba(255,255,255,.1), 0 10px 18px rgba(0,0,0,.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.card-tile.locked { filter: grayscale(1); opacity: .55; }
+.card-tile.selected { outline: 3px solid var(--gold); }
+.card-icon { font-size: 32px; line-height: 1; }
+.card-name {
+  font-weight: 950;
+  font-size: 13px;
+  text-align: center;
+  line-height: 1.05;
+}
+.card-meta { color: var(--muted); font-size: 11px; text-align: center; }
+.cost {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, #f38bff, #8b34d6);
+  border: 1px solid rgba(255,255,255,.55);
+  font-size: 13px;
+  font-weight: 950;
+}
+.rarity {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 10px;
+  font-weight: 950;
+  color: var(--gold);
+}
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.filter {
+  background: rgba(255,255,255,.08);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  padding: 8px 12px;
+  font-weight: 900;
+  font-size: 12px;
+}
+.filter.active { background: var(--gold); color: #211702; }
+.creator-form {
+  display: grid;
+  gap: 12px;
+}
+.field { display: grid; gap: 6px; }
+.field label { color: var(--muted); font-size: 13px; font-weight: 800; }
+.field input[type="text"], textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 11px 12px;
+  background: rgba(0,0,0,.28);
+  color: var(--text);
+}
+.field input[type="range"] { width: 100%; accent-color: var(--gold); }
+.save-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 40;
+  background: rgba(4,10,16,.84);
+}
+.save-modal.active { display: flex; }
+.bottom-tabs {
+  position: fixed;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  z-index: 35;
+  width: min(720px, calc(100% - 18px));
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  padding: 7px;
+  border-radius: 8px;
+  background: rgba(7,19,31,.92);
+  border: 1px solid rgba(255,255,255,.16);
+  box-shadow: 0 16px 34px rgba(0,0,0,.42);
+  backdrop-filter: blur(12px);
+}
+.bottom-tabs.hidden { display: none; }
+.tab-btn {
+  min-width: 0;
+  min-height: 48px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 950;
+}
+.tab-btn b { display: block; color: var(--text); font-size: 17px; line-height: 1; }
+.tab-btn.active {
+  background: linear-gradient(180deg, #ffe08a, #f1a92c);
+  color: #211702;
+}
+.tab-btn.active b { color: #211702; }
+.modal-card {
+  width: min(640px, 100%);
+  background: linear-gradient(180deg, #18334f, #102338);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+.modal-card textarea { min-height: 180px; resize: none; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+#game-screen {
+  padding: 8px;
+  justify-content: center;
+}
+.battle-wrap {
+  width: min(1120px, 100%);
+  height: min(100%, 790px);
+  display: grid;
+  grid-template-columns: minmax(320px, 520px) minmax(220px, 300px);
+  align-items: stretch;
+  justify-content: center;
+  gap: 12px;
+}
+#arena-shell {
+  position: relative;
+  height: 100%;
+  aspect-ratio: 2 / 3;
+  max-width: 100%;
+  margin: 0 auto;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.18);
+  background: #2f6f38;
+  box-shadow: var(--shadow);
+}
+#gameCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+.hud {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  z-index: 4;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  gap: 8px;
+}
+.crown-box, .timer-box {
+  background: rgba(7,19,31,.75);
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 8px;
+  padding: 8px 10px;
+  box-shadow: 0 10px 20px rgba(0,0,0,.26);
+}
+.crown-box.red { text-align: right; }
+.crown-name { font-size: 12px; color: var(--muted); font-weight: 900; }
+.crowns { font-size: 20px; font-weight: 950; color: var(--gold); }
+.timer-box { text-align: center; min-width: 92px; }
+#timer { font-size: 22px; font-weight: 950; }
+#mode-label { font-size: 10px; color: var(--muted); font-weight: 900; text-transform: uppercase; }
+#battle-message {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+  font-size: 36px;
+  font-weight: 950;
+  color: var(--gold);
+  text-shadow: 0 4px 0 rgba(0,0,0,.5), 0 12px 30px rgba(0,0,0,.8);
+  opacity: 0;
+}
+#battle-message.pop { animation: popmsg 1.55s ease forwards; }
+@keyframes popmsg {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.7); }
+  18% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+  78% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(.95); }
+}
+.hand-zone {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  z-index: 6;
+  display: grid;
+  gap: 8px;
+  pointer-events: none;
+}
+.elixir-wrap {
+  height: 24px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.55);
+  border: 2px solid rgba(255,255,255,.16);
+  overflow: hidden;
+  position: relative;
+}
+#elixir-fill {
+  height: 100%;
+  width: 50%;
+  background: linear-gradient(90deg, #b53dff, #f38bff);
+  transition: width .12s linear;
+}
+#elixir-text {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-weight: 950;
+  text-shadow: 0 2px 3px #000;
+}
+.hand-row {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 8px;
+  pointer-events: auto;
+}
+.next-card {
+  height: 82px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: rgba(7,19,31,.72);
+  border: 1px solid rgba(255,255,255,.16);
+}
+.next-card span { font-size: 10px; color: var(--muted); font-weight: 900; display: block; text-align: center; }
+#next-icon { font-size: 27px; }
+#hand {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.hand-card {
+  position: relative;
+  height: 82px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #2c5c8e, #142f4d);
+  border: 2px solid rgba(255,255,255,.16);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 2px;
+  box-shadow: 0 10px 18px rgba(0,0,0,.32);
+  transition: transform .12s ease, border-color .12s ease, filter .12s ease;
+}
+.hand-card .card-icon { font-size: 28px; }
+.hand-card .card-name { font-size: 10px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 5px; }
+.hand-card.selected {
+  transform: translateY(-14px);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(255,209,102,.16), 0 14px 24px rgba(0,0,0,.36);
+}
+.hand-card.disabled { filter: grayscale(1) brightness(.62); }
+.game-panel {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 10px;
+  min-height: 0;
+}
+.mini-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.mini-stat {
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+}
+.mini-stat b { display: block; font-size: 20px; }
+#battle-log {
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+}
+.log-line {
+  padding: 9px 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  color: var(--muted);
+  font-size: 12px;
+}
+#end-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  background: rgba(5,11,18,.78);
+  padding: 20px;
+}
+#end-overlay.active { display: flex; }
+.end-card {
+  width: min(360px, 100%);
+  text-align: center;
+  background: linear-gradient(180deg, #f8fbff, #d8e6f3);
+  color: #102338;
+  border-radius: 8px;
+  padding: 20px;
+  border: 4px solid rgba(255,255,255,.4);
+  box-shadow: var(--shadow);
+}
+.end-card h2 { color: #102338; }
+.end-card .btn { color: #102338; }
+.quit-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 8;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: rgba(7,19,31,.78);
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow: none;
+}
+@media (max-width: 850px) {
+  .menu-shell { grid-template-columns: 1fr; overflow: auto; padding-bottom: 12px; }
+  .hero-card, .side-stack { max-height: none; overflow: visible; }
+  .arena-preview { height: 190px; }
+  .battle-wrap {
+    height: calc(100svh - 16px);
+    grid-template-columns: minmax(300px, 520px);
+  }
+  .game-panel { display: none; }
+  .work-area { grid-template-columns: 1fr; overflow: auto; }
+  .screen { overflow: auto; }
+  #arena-shell { height: min(calc(100svh - 16px), 780px); }
+}
+@media (max-width: 480px) {
+  .screen { padding: 10px 10px 84px; }
+  .menu-actions { grid-template-columns: 1fr; }
+  .hero-card, .panel { padding: 12px; }
+  #hand { gap: 5px; }
+  .hand-row { grid-template-columns: 46px 1fr; gap: 5px; }
+  .hand-card { height: 76px; }
+  .next-card { height: 76px; }
+  .hud { gap: 5px; left: 5px; right: 5px; }
+  .crown-box, .timer-box { padding: 6px 7px; }
+  .bottom-tabs { bottom: 6px; width: calc(100% - 10px); gap: 4px; padding: 5px; }
+  .tab-btn { min-height: 46px; font-size: 9px; }
+  .tab-btn b { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+<section id="menu-screen" class="screen active">
+  <div class="topbar">
+    <div class="brand">
+      <div class="eyebrow">Single file arena battler</div>
+      <h1>Clash of Domers Deluxe</h1>
+    </div>
+    <button class="btn small" onclick="App.openSave('export')">Save Code</button>
+  </div>
+  <div class="menu-shell">
+    <main class="hero-card">
+      <div class="arena-preview" aria-hidden="true">
+        <div class="preview-unit u1">⚔️</div>
+        <div class="preview-unit u2">☄️</div>
+        <div class="preview-unit u3">🏹</div>
+      </div>
+      <div>
+        <div class="eyebrow">Commander</div>
+        <h2 id="player-name" onclick="App.changeName()" title="Change name">Guest</h2>
+        <p class="muted" id="rank-line">Training Camp</p>
+      </div>
+      <div class="stat-row">
+        <div class="chip">🏆 <span id="menu-trophies">0</span></div>
+        <div class="chip">💰 <span id="menu-gold">0</span></div>
+        <div class="chip">✅ <span id="menu-wins">0</span> wins</div>
+        <div class="chip">🔥 <span id="menu-streak">0</span> streak</div>
+        <div class="chip">🏟️ <span id="menu-league">No League</span></div>
+      </div>
+      <div class="menu-actions">
+        <button class="btn primary" onclick="App.startGame('normal')">Battle</button>
+        <button class="btn red" onclick="App.startGame('ranked')">Ranked</button>
+        <button class="btn purple" onclick="App.startGame('boss')">Boss Rush</button>
+        <button class="btn green" onclick="App.startGame('triple')">3x Elixir</button>
+        <button class="btn story" onclick="App.openStory()">Story Mode</button>
+      </div>
+      <div class="menu-actions">
+        <button class="btn" onclick="App.openCreator()">Creator</button>
+        <button class="btn" onclick="App.openSettings()">Settings</button>
+      </div>
+    </main>
+    <aside class="side-stack">
+      <div class="panel rank-card">
+        <div class="rank-badge" id="rank-badge">I</div>
+        <div>
+          <div class="panel-title">
+            <h3 id="rank-name">Training Camp</h3>
+          </div>
+          <div class="progress"><span id="rank-progress"></span></div>
+          <p class="muted" id="rank-next">Next arena at 300 trophies</p>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><h3>Deluxe Upgrade</h3><span class="muted">v10.5</span></div>
+        <ul class="quest-list">
+          <li><span>Smarter deck-based AI</span><b>Live</b></li>
+          <li><span>Crowns, overtime, tie-breakers</span><b>Live</b></li>
+          <li><span>Status spells and buildings</span><b>Live</b></li>
+          <li><span>Cleaner card economy and saves</span><b>Live</b></li>
+        </ul>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><h3>Quick Tips</h3></div>
+        <ul class="quest-list">
+          <li><span>Press 1-4 to select cards</span><b>Keys</b></li>
+          <li><span>Spells can hit anywhere</span><b>Aim</b></li>
+          <li><span>Destroy side towers to deploy deeper</span><b>Push</b></li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section id="deck-screen" class="screen">
+  <div class="back-row">
+    <button class="btn small" onclick="App.openMenu()">Back</button>
+    <div><h2>Your Deck</h2><p class="muted" id="deck-summary">Average cost 0.0</p></div>
+    <div class="filters" id="preset-row">
+      <button class="filter active" onclick="App.selectPreset(0)">Deck 1</button>
+      <button class="filter" onclick="App.selectPreset(1)">Deck 2</button>
+      <button class="filter" onclick="App.selectPreset(2)">Deck 3</button>
+    </div>
+  </div>
+  <div class="work-area">
+    <div class="panel scroll-panel">
+      <div class="panel-title"><h3>Current Cards</h3><span id="deck-count" class="muted">0/8</span></div>
+      <div id="deck-grid" class="grid"></div>
+    </div>
+    <div class="panel scroll-panel">
+      <div class="panel-title"><h3>Collection</h3></div>
+      <div class="filters">
+        <button class="filter active" onclick="App.setFilter('deck','all',this)">All</button>
+        <button class="filter" onclick="App.setFilter('deck','troop',this)">Troops</button>
+        <button class="filter" onclick="App.setFilter('deck','spell',this)">Spells</button>
+        <button class="filter" onclick="App.setFilter('deck','building',this)">Buildings</button>
+      </div>
+      <div id="collection-grid" class="grid"></div>
+    </div>
+  </div>
+</section>
+
+<section id="shop-screen" class="screen">
+  <div class="back-row">
+    <button class="btn small" onclick="App.openMenu()">Back</button>
+    <div><h2>Card Shop</h2><p class="muted">Unlock cards with gold and trophies</p></div>
+    <div class="chip">💰 <span id="shop-gold">0</span></div>
+  </div>
+  <div class="work-area single">
+    <div class="panel scroll-panel">
+      <div class="filters">
+        <button class="filter active" onclick="App.setFilter('shop','all',this)">All</button>
+        <button class="filter" onclick="App.setFilter('shop','troop',this)">Troops</button>
+        <button class="filter" onclick="App.setFilter('shop','spell',this)">Spells</button>
+        <button class="filter" onclick="App.setFilter('shop','building',this)">Buildings</button>
+      </div>
+      <div id="shop-grid" class="grid"></div>
+    </div>
+  </div>
+</section>
+
+<section id="creator-screen" class="screen">
+  <div class="back-row">
+    <button class="btn small" onclick="App.openMenu()">Back</button>
+    <div><h2>Card Creator</h2><p class="muted">Build a custom troop that saves into your collection</p></div>
+    <div class="chip">💰 <span id="creator-gold">0</span></div>
+  </div>
+  <div class="work-area">
+    <div class="panel">
+      <div id="creator-preview" class="card-tile selected" style="height:260px; max-width:220px; margin:auto;">
+        <div class="cost" id="preview-cost">3</div>
+        <div class="rarity">CUSTOM</div>
+        <div class="card-icon" id="preview-icon" style="font-size:62px;">👾</div>
+        <div class="card-name" id="preview-name" style="font-size:22px;">My Card</div>
+        <div class="card-meta" id="preview-stats">HP 600 | DMG 100</div>
+      </div>
+      <p class="muted" id="preview-price" style="text-align:center;">Craft cost: 600 gold</p>
+    </div>
+    <div class="panel scroll-panel">
+      <div class="creator-form">
+        <div class="field"><label>Name</label><input id="creator-name" maxlength="14" value="My Card" oninput="App.updateCreator()"></div>
+        <div class="field"><label>Icon</label><input id="creator-icon" maxlength="4" value="👾" oninput="App.updateCreator()"></div>
+        <div class="field"><label>Health <span id="creator-hp-label">600</span></label><input id="creator-hp" type="range" min="150" max="2800" step="50" value="600" oninput="App.updateCreator()"></div>
+        <div class="field"><label>Damage <span id="creator-dmg-label">100</span></label><input id="creator-dmg" type="range" min="35" max="520" step="5" value="100" oninput="App.updateCreator()"></div>
+        <div class="field"><label>Range <span id="creator-range-label">Melee</span></label><input id="creator-range" type="range" min="24" max="220" step="4" value="28" oninput="App.updateCreator()"></div>
+        <div class="field"><label>Squad Count <span id="creator-count-label">1</span></label><input id="creator-count" type="range" min="1" max="6" step="1" value="1" oninput="App.updateCreator()"></div>
+        <button class="btn green" onclick="App.craftCard()">Craft Card</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="rivals-screen" class="screen">
+  <div class="back-row">
+    <button class="btn small" onclick="App.openMenu()">Back</button>
+    <div><h2>Live Leaderboard</h2><p class="muted" id="rival-summary">CPU rivals are active</p></div>
+    <span class="tag">Updates after battles</span>
+  </div>
+  <div class="work-area single">
+    <div class="panel scroll-panel">
+      <div id="rival-list" class="rival-list"></div>
+    </div>
+  </div>
+</section>
+
+<section id="events-screen" class="screen">
+  <div class="back-row">
+    <button class="btn small" onclick="App.openMenu()">Back</button>
+    <div><h2>Tournaments & Leagues</h2><p class="muted" id="event-summary">Enter events for bigger rewards</p></div>
+    <button class="btn small" onclick="App.openRivals()">Leaderboard</button>
+  </div>
+  <div class="work-area">
+    <div class="panel scroll-panel">
+      <div class="panel-title"><h3>Tournaments</h3><span class="muted" id="active-tournament-label">No active run</span></div>
+      <div id="event-grid" class="event-grid"></div>
+    </div>
+    <div class="panel scroll-panel">
+      <div class="panel-title"><h3>Leagues</h3><span class="muted" id="league-label">No league</span></div>
+      <div id="league-grid" class="league-grid"></div>
+    </div>
+  </div>
+</section>
+
+<section id="story-screen" class="screen">
+  <div class="back-row">
+    <button class="btn small" onclick="App.openMenu()">Back</button>
+    <div><h2>Story Mode</h2><p class="muted" id="story-progress">Chapter 1 unlocked</p></div>
+    <button class="btn small" onclick="App.openDeck()">Edit Deck</button>
+  </div>
+  <div class="story-prologue">
+    The Dome Crown has been stolen from Training Camp. Battle through rival arenas, recruit stronger cards, and track the thief before the Final Dome locks the kingdom out for good.
+  </div>
+  <div class="work-area single">
+    <div class="panel scroll-panel">
+      <div id="story-grid" class="chapter-grid"></div>
+    </div>
+  </div>
+</section>
+
+<section id="settings-screen" class="screen">
+  <div class="back-row">
+    <button class="btn small" onclick="App.openMenu()">Back</button>
+    <div><h2>Settings</h2><p class="muted">Tune the arena and save file</p></div>
+    <button class="btn small red" onclick="App.resetData()">Reset</button>
+  </div>
+  <div class="work-area single">
+    <div class="panel">
+      <div class="quest-list">
+        <li><span>Deck Size</span><button class="btn small" id="deck-size-btn" onclick="App.toggleDeckSize()">8 Cards</button></li>
+        <li><span>Map Theme</span><button class="btn small" id="map-btn" onclick="App.cycleMap()">Royal Green</button></li>
+        <li><span>Import Save</span><button class="btn small" onclick="App.openSave('import')">Load Code</button></li>
+        <li><span>Developer Boost</span><button class="btn small green" onclick="App.devBoost()">Unlock All</button></li>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="game-screen" class="screen">
+  <div class="battle-wrap">
+    <div id="arena-shell">
+      <button class="quit-btn" onclick="Game.quitToMenu()">✕</button>
+      <canvas id="gameCanvas" width="520" height="780"></canvas>
+      <div class="hud">
+        <div class="crown-box">
+          <div class="crown-name" id="hud-player">You</div>
+          <div class="crowns" id="blue-crowns">0 crowns</div>
+        </div>
+        <div class="timer-box">
+          <div id="timer">3:00</div>
+          <div id="mode-label">Battle</div>
+        </div>
+        <div class="crown-box red">
+          <div class="crown-name" id="hud-enemy">Opponent</div>
+          <div class="crowns" id="red-crowns">0 crowns</div>
+        </div>
+      </div>
+      <div id="battle-message"></div>
+      <div class="hand-zone">
+        <div class="elixir-wrap"><div id="elixir-fill"></div><div id="elixir-text">5/10</div></div>
+        <div class="hand-row">
+          <div class="next-card"><div><span>NEXT</span><div id="next-icon">?</div></div></div>
+          <div id="hand"></div>
+        </div>
+      </div>
+      <div id="end-overlay">
+        <div class="end-card">
+          <h2 id="end-title">Victory</h2>
+          <p id="end-detail" style="font-weight:900;">+30 trophies</p>
+          <p id="end-extra" class="muted"></p>
+          <button class="btn primary" onclick="App.openMenu()">Continue</button>
+        </div>
+      </div>
+    </div>
+    <aside class="panel game-panel">
+      <div class="panel-title">
+        <h3>Battle Feed</h3>
+        <span class="muted" id="enemy-skill">AI</span>
+      </div>
+      <div class="mini-stats">
+        <div class="mini-stat"><span class="muted">Elixir</span><b id="enemy-elixir">5</b></div>
+        <div class="mini-stat"><span class="muted">Alive</span><b id="alive-count">0</b></div>
+      </div>
+      <div id="battle-log"></div>
+      <button class="btn small" onclick="Game.quitToMenu()">Return to Menu</button>
+    </aside>
+  </div>
+</section>
+
+<nav id="bottom-tabs" class="bottom-tabs">
+  <button class="tab-btn" data-tab="menu-screen" onclick="App.openMenu()"><b>⌂</b>Home</button>
+  <button class="tab-btn" data-tab="deck-screen" onclick="App.openDeck()"><b>▣</b>Deck</button>
+  <button class="tab-btn" data-tab="shop-screen" onclick="App.openShop()"><b>$</b>Shop</button>
+  <button class="tab-btn" data-tab="story-screen" onclick="App.openStory()"><b>★</b>Story</button>
+  <button class="tab-btn" data-tab="rivals-screen" onclick="App.openRivals()"><b>≡</b>Rivals</button>
+  <button class="tab-btn" data-tab="events-screen" onclick="App.openEvents()"><b>♛</b>Events</button>
+</nav>
+
+<div id="save-modal" class="save-modal">
+  <div class="modal-card">
+    <div class="panel-title"><h3 id="save-title">Save Code</h3><button class="btn small red" onclick="App.closeSave()">Close</button></div>
+    <textarea id="save-area" spellcheck="false"></textarea>
+    <div style="display:flex; gap:10px; margin-top:12px;">
+      <button class="btn green" id="copy-save-btn" onclick="App.copySave()">Copy</button>
+      <button class="btn primary" id="load-save-btn" onclick="App.loadSaveCode()">Load</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const WIDTH = 520;
+const HEIGHT = 780;
+const RIVER_Y = 360;
+const BRIDGE_LEFT = 112;
+const BRIDGE_RIGHT = WIDTH - 112;
+const BLUE = "blue";
+const RED = "red";
+const SAVE_KEY = "clash_of_domers_deluxe_v10";
+const $ = (id) => document.getElementById(id);
+const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+const rand = (min, max) => min + Math.random() * (max - min);
+const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+const otherTeam = (team) => team === BLUE ? RED : BLUE;
+const escapeHTML = (value) => String(value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+const MAPS = [
+  { id: "green", name: "Royal Green", grass: "#4a974d", grass2: "#448d47", river: "#248bd0", bridge: "#a06a38", road: "#d4b16b" },
+  { id: "snow", name: "Frozen Peak", grass: "#dcecf3", grass2: "#c8dde8", river: "#74c5ff", bridge: "#667386", road: "#eff7fb" },
+  { id: "desert", name: "Bone Pit", grass: "#d9913a", grass2: "#cc8130", river: "#c96c2d", bridge: "#79512f", road: "#f2c96e" },
+  { id: "night", name: "Electro Night", grass: "#23344d", grass2: "#1d2d44", river: "#6d62ff", bridge: "#394057", road: "#2cd0c7" }
+];
+
+const RANKS = [
+  { name: "Training Camp", min: 0, roman: "I" },
+  { name: "Goblin Stadium", min: 300, roman: "II" },
+  { name: "Bone Pit", min: 650, roman: "III" },
+  { name: "Barbarian Bowl", min: 1050, roman: "IV" },
+  { name: "Spell Valley", min: 1600, roman: "V" },
+  { name: "Royal Arena", min: 2300, roman: "VI" },
+  { name: "Frozen Peak", min: 3000, roman: "VII" },
+  { name: "Legendary Arena", min: 3900, roman: "VIII" }
+];
+
+const BOT_NAMES = [
+  "Trainer Cheddar", "King Arthur", "Bridge Spam Ben", "Dome Lord", "Mini Pekka Max",
+  "Princess L", "Surgical Bot", "Mortar Mind", "Red King", "Final Boss"
+];
+
+const UNLOCK_REQ_SCALE = 0.42;
+const SHOP_PRICE_SCALE = 0.78;
+
+const CARDS = {
+  knight: { name: "Knight", icon: "⚔️", kind: "troop", cost: 3, hp: 920, dmg: 108, speed: 58, range: 30, hitSpeed: 1.05, count: 1, scale: 31, mass: 24, role: "fighter", req: 0, price: 0 },
+  archers: { name: "Archers", icon: "🏹", kind: "troop", cost: 3, hp: 270, dmg: 62, speed: 61, range: 174, hitSpeed: .95, count: 2, scale: 25, mass: 10, role: "ranged", req: 0, price: 0 },
+  giant: { name: "Giant", icon: "🛡️", kind: "troop", cost: 5, hp: 2600, dmg: 146, speed: 34, range: 34, hitSpeed: 1.35, count: 1, scale: 48, mass: 70, role: "tank", preferBuildings: true, req: 0, price: 80 },
+  bomber: { name: "Bomber", icon: "💣", kind: "troop", cost: 2, hp: 230, dmg: 142, speed: 54, range: 135, hitSpeed: 1.25, count: 1, scale: 24, mass: 9, role: "splash", splash: 46, req: 0, price: 60 },
+  fireball: { name: "Fireball", icon: "☄️", kind: "spell", cost: 4, dmg: 460, radius: 64, color: "#ff6a2a", req: 0, price: 120, subtype: "damage" },
+  arrows: { name: "Arrows", icon: "➹", kind: "spell", cost: 3, dmg: 210, radius: 86, color: "#ffd166", req: 0, price: 80, subtype: "damage" },
+  musketeer: { name: "Musketeer", icon: "🎯", kind: "troop", cost: 4, hp: 570, dmg: 150, speed: 55, range: 196, hitSpeed: 1.15, count: 1, scale: 28, mass: 15, role: "ranged", req: 0, price: 90 },
+  mini_pekka: { name: "Mini P", icon: "🤖", kind: "troop", cost: 4, hp: 930, dmg: 390, speed: 67, range: 28, hitSpeed: 1.35, count: 1, scale: 30, mass: 23, role: "killer", req: 0, price: 110 },
+  skeletons: { name: "Skeletons", icon: "💀", kind: "troop", cost: 1, hp: 64, dmg: 48, speed: 74, range: 24, hitSpeed: .85, count: 3, scale: 18, mass: 4, role: "swarm", req: 0, price: 30 },
+  goblins: { name: "Goblins", icon: "👺", kind: "troop", cost: 2, hp: 115, dmg: 68, speed: 78, range: 24, hitSpeed: .85, count: 3, scale: 20, mass: 5, role: "swarm", req: 250, price: 75 },
+  valkyrie: { name: "Valkyrie", icon: "🪓", kind: "troop", cost: 4, hp: 1320, dmg: 158, speed: 48, range: 34, hitSpeed: 1.25, count: 1, scale: 31, mass: 31, role: "splash", splash: 52, req: 350, price: 160 },
+  dart_goblin: { name: "Dart Gob", icon: "🎭", kind: "troop", cost: 3, hp: 180, dmg: 88, speed: 82, range: 230, hitSpeed: .78, count: 1, scale: 22, mass: 7, role: "ranged", req: 500, price: 180 },
+  hog_rider: { name: "Hog Rider", icon: "🐗", kind: "troop", cost: 4, hp: 1120, dmg: 204, speed: 98, range: 28, hitSpeed: 1.15, count: 1, scale: 34, mass: 31, role: "tank", preferBuildings: true, req: 800, price: 260 },
+  wizard: { name: "Wizard", icon: "🧙", kind: "troop", cost: 5, hp: 560, dmg: 176, speed: 48, range: 160, hitSpeed: 1.25, count: 1, scale: 31, mass: 14, role: "splash", splash: 58, req: 1000, price: 310 },
+  prince: { name: "Prince", icon: "🏇", kind: "troop", cost: 5, hp: 1300, dmg: 242, speed: 70, range: 34, hitSpeed: 1.2, count: 1, scale: 36, mass: 42, role: "charger", charge: true, req: 1250, price: 360 },
+  cannon: { name: "Cannon", icon: "🛞", kind: "building", cost: 3, hp: 1050, dmg: 118, range: 168, hitSpeed: .9, lifetime: 32, scale: 34, mass: 999, role: "defense", req: 650, price: 230 },
+  tombstone: { name: "Tombstone", icon: "🪦", kind: "building", cost: 3, hp: 760, dmg: 0, range: 0, lifetime: 34, spawnId: "skeletons", spawnEvery: 4.2, scale: 34, mass: 999, role: "spawner", req: 1200, price: 260 },
+  poison: { name: "Poison", icon: "☠️", kind: "spell", cost: 4, dmg: 70, radius: 96, color: "#8e56c5", duration: 5, req: 1450, price: 340, subtype: "poison" },
+  zap: { name: "Zap", icon: "⚡", kind: "spell", cost: 2, dmg: 130, radius: 52, color: "#7ee7ff", stun: .8, req: 1600, price: 330, subtype: "zap" },
+  heal: { name: "Heal", icon: "💚", kind: "spell", cost: 2, dmg: 0, radius: 76, color: "#38d989", heal: 360, req: 1800, price: 320, subtype: "heal" },
+  rage: { name: "Rage", icon: "💢", kind: "spell", cost: 2, dmg: 0, radius: 88, color: "#d46cff", duration: 6, req: 2100, price: 440, subtype: "rage" },
+  freeze: { name: "Freeze", icon: "🧊", kind: "spell", cost: 4, dmg: 60, radius: 82, color: "#9de8ff", stun: 2.5, req: 2450, price: 520, subtype: "freeze" },
+  pekka: { name: "P.E.K.K.A", icon: "🦾", kind: "troop", cost: 7, hp: 3150, dmg: 610, speed: 34, range: 38, hitSpeed: 1.55, count: 1, scale: 54, mass: 84, role: "killer", req: 2750, price: 900 },
+  sparky: { name: "Sparky", icon: "🚜", kind: "troop", cost: 6, hp: 1180, dmg: 920, speed: 31, range: 150, hitSpeed: 3.5, count: 1, scale: 45, mass: 55, role: "splash", splash: 72, req: 3400, price: 1300 },
+  mega_knight: { name: "Mega K", icon: "🌑", kind: "troop", cost: 7, hp: 2860, dmg: 220, speed: 44, range: 42, hitSpeed: 1.35, count: 1, scale: 56, mass: 85, role: "splash", splash: 64, spawnSplash: 180, req: 3900, price: 1600 }
+};
+
+Object.keys(CARDS).forEach((id) => {
+  const card = CARDS[id];
+  card.id = id;
+  card.req = Math.floor(((card.req || 0) * UNLOCK_REQ_SCALE) / 50) * 50;
+  card.price = card.price ? Math.max(25, Math.round((card.price * SHOP_PRICE_SCALE) / 10) * 10) : 0;
+});
+const DEFAULT_DECK = ["knight", "archers", "giant", "bomber", "fireball", "arrows", "musketeer", "mini_pekka"];
+const STORY_CHAPTERS = [
+  {
+    title: "The Missing Crown",
+    enemy: "Trainer Cheddar",
+    map: "green",
+    trophies: 150,
+    skill: .28,
+    time: 150,
+    deck: ["knight", "archers", "bomber", "skeletons", "arrows", "fireball", "goblins", "cannon"],
+    rewardGold: 220,
+    rewardTrophies: 55,
+    intro: "The Dome Crown vanished during the morning parade. Cheddar swears he saw a masked rider cross the left bridge.",
+    win: "Cheddar coughs up the first clue: the thief bought explosives in Bone Pit."
+  },
+  {
+    title: "Bridge of Sparks",
+    enemy: "Zap Apprentice",
+    map: "night",
+    trophies: 420,
+    skill: .42,
+    time: 165,
+    deck: ["zap", "dart_goblin", "cannon", "goblins", "mini_pekka", "archers", "fireball", "skeletons"],
+    rewardGold: 320,
+    rewardTrophies: 70,
+    intro: "The trail leads to a night arena where apprentices overload the bridges and tax every crossing.",
+    win: "A sparking badge points toward a tombstone dealer outside Bone Pit."
+  },
+  {
+    title: "Bone Pit Ambush",
+    enemy: "Tombstone Dealer",
+    map: "desert",
+    trophies: 740,
+    skill: .58,
+    time: 170,
+    deck: ["tombstone", "skeletons", "valkyrie", "poison", "bomber", "giant", "arrows", "cannon"],
+    rewardGold: 440,
+    rewardTrophies: 90,
+    intro: "Bones pile around the river. The dealer claims the crown is already on its way to Frozen Peak.",
+    win: "You recover a frozen shipping tag stamped with the Final Dome seal."
+  },
+  {
+    title: "Frozen Gate",
+    enemy: "Ice Gatekeeper",
+    map: "snow",
+    trophies: 1120,
+    skill: .72,
+    time: 180,
+    deck: ["freeze", "wizard", "prince", "cannon", "heal", "musketeer", "hog_rider", "zap"],
+    rewardGold: 620,
+    rewardTrophies: 115,
+    intro: "A locked gate blocks the mountain road. The keeper fights slow, clean, and mean.",
+    win: "The gate cracks open. Beyond it, the crown glows inside the Final Dome."
+  },
+  {
+    title: "Final Dome",
+    enemy: "The Crown Thief",
+    map: "night",
+    trophies: 1800,
+    skill: .92,
+    time: 195,
+    boss: true,
+    deck: ["mega_knight", "pekka", "sparky", "wizard", "freeze", "poison", "fireball", "tombstone"],
+    rewardGold: 1200,
+    rewardTrophies: 180,
+    intro: "The thief raises the Dome Crown and powers one giant king tower. This is the last push.",
+    win: "The crown is back. Training Camp lights every bridge in your name."
+  }
+];
+const RIVAL_NAMES = [
+  "Trainer Cheddar", "King Arthur", "Bridge Spam Ben", "Dome Lord", "Mini Pekka Max",
+  "Princess L", "Surgical Bot", "Mortar Mind", "Red King", "Frost Byte",
+  "Zap Grandma", "Arena Andy", "Poison Pete", "Crown Chaser", "Left Lane Leo",
+  "Final Boss Jr", "Card Shark", "Deck Wizard", "Tower Tax", "Elixir Eddie"
+];
+const RIVAL_LINES = [
+  "says your deck is brave, which might be an insult.",
+  "is practicing a new bridge push.",
+  "sent a friendly emote and immediately regretted it.",
+  "claims they only lose because of lag.",
+  "wants a rematch after your next win.",
+  "is scouting your favorite lane."
+];
+const TOURNAMENTS = [
+  { id: "bronze_cup", name: "Bronze Cup", entry: 80, min: 0, rounds: 2, rewardGold: 420, rewardTrophies: 28, description: "A quick two-round bracket against lower arena rivals." },
+  { id: "dome_open", name: "Dome Open", entry: 180, min: 300, rounds: 3, rewardGold: 950, rewardTrophies: 55, description: "Three rounds, stronger opponents, and a real payout." },
+  { id: "crown_gauntlet", name: "Crown Gauntlet", entry: 360, min: 900, rounds: 4, rewardGold: 1900, rewardTrophies: 95, description: "A long run for players who want the leaderboard to notice." }
+];
+const LEAGUES = [
+  { id: "rookie", name: "Rookie League", min: 0, rewardGold: 150, description: "Casual ladder points from battles and ranked wins." },
+  { id: "royal", name: "Royal League", min: 500, rewardGold: 320, description: "Stronger rivals and better end-of-run bonuses." },
+  { id: "legend", name: "Legend League", min: 1200, rewardGold: 650, description: "High skill leaderboard pressure with the biggest payouts." }
+];
+const SAVE_CARD_ALIASES = {
+  archer: "archers",
+  archers: "archers",
+  mk: "mega_knight",
+  mega_knight: "mega_knight",
+  dart_gob: "dart_goblin",
+  spear_gobs: "goblins",
+  skarmy: "skeletons",
+  zap_pack: "zap",
+  ice_wiz: "freeze",
+  ice_spirit: "freeze",
+  heal_spirit: "heal",
+  log: "arrows",
+  baby_dragon: "wizard",
+  witch: "wizard",
+  royal_giant: "giant",
+  royal_ghost: "knight",
+  elite_barbs: "prince",
+  battle_ram: "hog_rider",
+  miner: "hog_rider",
+  lava_hound: "giant",
+  magic_archer: "dart_goblin",
+  lumberjack: "prince",
+  golem: "giant"
+};
+const SAVE_MAP_ALIASES = { default: "green", dark: "night", green: "green", snow: "snow", desert: "desert", night: "night" };
+let player = makeDefaultPlayer();
+
+function makeDefaultPlayer() {
+  return {
+    name: "Guest",
+    trophies: 0,
+    gold: 400,
+    wins: 0,
+    losses: 0,
+    streak: 0,
+    currentDeckIdx: 0,
+    collection: [...DEFAULT_DECK],
+    decks: [[...DEFAULT_DECK], [...DEFAULT_DECK], [...DEFAULT_DECK]],
+    customCards: [],
+    story: { unlocked: 1, completed: [] },
+    rivals: createRivals(0),
+    friends: [],
+    socialLog: [],
+    league: null,
+    leaguePoints: 0,
+    activeTournament: null,
+    settings: { deckSize: 8, map: "green" }
+  };
+}
+
+function registerCustomCards(cards) {
+  (Array.isArray(cards) ? cards : []).forEach((card) => {
+    if (!card || !card.id || !card.kind) return;
+    if (card.custom && card.kind === "troop") {
+      const rawHp = Number(card.rawHp || card.hp) || 600;
+      const rawDmg = Number(card.rawDmg || card.dmg) || 100;
+      const range = clamp(Number(card.range) || 28, 24, 220);
+      const count = clamp(Number(card.count) || 1, 1, 6);
+      const balanced = balanceCreatedCardStats(rawHp, rawDmg, range, count);
+      CARDS[card.id] = {
+        ...card,
+        id: card.id,
+        rawHp,
+        rawDmg,
+        range,
+        count,
+        hp: balanced.hp,
+        dmg: balanced.dmg,
+        cost: balanced.cost,
+        speed: balanced.speed,
+        hitSpeed: balanced.hitSpeed,
+        scale: count > 1 ? 24 : range > 90 ? 27 : 30,
+        mass: count > 1 ? 8 + Math.round(balanced.hp / 240) : 20 + Math.round(balanced.hp / 220),
+        role: range > 90 ? "ranged" : count > 2 ? "swarm" : "fighter"
+      };
+      return;
+    }
+    CARDS[card.id] = { ...card, id: card.id };
+  });
+}
+
+function resolveCardId(id) {
+  if (!id) return null;
+  const key = String(id).trim();
+  return SAVE_CARD_ALIASES[key] || key;
+}
+
+function normalizeDeck(deck, collection, limit) {
+  const seen = new Set();
+  const cleaned = [];
+  const push = (id) => {
+    const mapped = resolveCardId(id);
+    if (mapped && CARDS[mapped] && collection.includes(mapped) && !seen.has(mapped)) {
+      seen.add(mapped);
+      cleaned.push(mapped);
+    }
+  };
+  (Array.isArray(deck) ? deck : []).forEach(push);
+  [...DEFAULT_DECK, ...collection].forEach(push);
+  return cleaned.slice(0, limit);
+}
+
+function normalizeStory(story) {
+  const rawCompleted = Array.isArray(story?.completed) ? story.completed : [];
+  const completed = [...new Set(rawCompleted.map(Number).filter((n) => Number.isInteger(n) && n >= 0 && n < STORY_CHAPTERS.length))];
+  const unlockedRaw = Number(story?.unlocked ?? story?.chapter ?? 1);
+  const unlocked = clamp(Math.max(1, unlockedRaw, completed.length ? Math.max(...completed) + 2 : 1), 1, STORY_CHAPTERS.length);
+  return { unlocked, completed };
+}
+
+function balanceCreatedCardStats(hp, dmg, range, count) {
+  const squad = Math.max(1, count);
+  const ranged = range >= 90;
+  const squadFactor = 1 / (1 + (squad - 1) * .42);
+  const rangeFactor = ranged ? clamp(1 - (range - 90) / 520, .72, .92) : 1;
+  const tankFactor = hp > 1250 && squad > 1 ? .86 : 1;
+  const burstFactor = dmg > 260 && squad > 1 ? .84 : 1;
+  const effectiveHp = Math.round(Math.max(55, hp * squadFactor * rangeFactor * tankFactor));
+  const effectiveDmg = Math.round(Math.max(24, dmg * squadFactor * rangeFactor * burstFactor));
+  const hitSpeed = Number(clamp(.9 + (ranged ? .18 : 0) + Math.max(0, dmg - 220) / 850 + (squad - 1) * .035, .85, 1.65).toFixed(2));
+  const totalHp = effectiveHp * squad;
+  const totalDps = (effectiveDmg / hitSpeed) * squad;
+  const rangeValue = ranged ? 1.18 + (range - 90) / 620 : 1;
+  const pressure = totalHp / 850 + (totalDps * rangeValue) / 185 + squad * .18 + (ranged ? .65 : 0);
+  const cost = clamp(Math.ceil(pressure + .35), 1, 9);
+  const price = Math.round(cost * 260 + totalHp / 4 + totalDps * 3 + range * (ranged ? 2.2 : 1.1));
+  const speed = Math.round(clamp((ranged ? 54 : 63) - Math.max(0, totalHp - 950) / 260 - (squad - 1) * 1.7, 34, 72));
+  return { hp: effectiveHp, dmg: effectiveDmg, hitSpeed, totalHp, totalDps, cost, price, speed };
+}
+
+function createRivals(playerTrophies = 0) {
+  return RIVAL_NAMES.map((name, i) => {
+    const spread = (i - 8) * 155 + Math.floor(rand(-90, 130));
+    const trophies = Math.max(1, Math.round((playerTrophies + 350 + spread) / 10) * 10);
+    return {
+      id: "rival_" + i,
+      name,
+      trophies,
+      wins: Math.max(0, Math.floor(trophies / 180) + Math.floor(rand(0, 12))),
+      losses: Math.floor(rand(0, 18)),
+      friend: false,
+      mood: RIVAL_LINES[i % RIVAL_LINES.length]
+    };
+  });
+}
+
+function normalizeRivals(rivals, playerTrophies) {
+  const source = Array.isArray(rivals) && rivals.length >= 8 ? rivals : createRivals(playerTrophies);
+  return source.map((rival, i) => ({
+    id: rival.id || "rival_" + i,
+    name: String(rival.name || RIVAL_NAMES[i % RIVAL_NAMES.length]).slice(0, 18),
+    trophies: Math.max(1, Number(rival.trophies) || Math.max(1, playerTrophies + (i - 5) * 120)),
+    wins: Math.max(0, Number(rival.wins) || 0),
+    losses: Math.max(0, Number(rival.losses) || 0),
+    friend: !!rival.friend,
+    mood: rival.mood || RIVAL_LINES[i % RIVAL_LINES.length],
+    lastMove: Number(rival.lastMove) || 0
+  }));
+}
+
+function rivalSkill(trophies) {
+  return clamp(.22 + (Number(trophies) || 0) / 5200, .22, 1.08);
+}
+
+function normalizeSave(data) {
+  const base = makeDefaultPlayer();
+  const raw = data && typeof data === "object" ? data : {};
+  const customCards = Array.isArray(raw.customCards) ? raw.customCards.filter((card) => card && card.id) : [];
+  registerCustomCards(customCards);
+  const deckSource = Array.isArray(raw.decks) ? raw.decks : base.decks;
+  const deckIds = deckSource.flatMap((deck) => Array.isArray(deck) ? deck : []);
+  const collectionSource = Array.isArray(raw.collection) ? raw.collection : [];
+  const mappedCollection = [...DEFAULT_DECK, ...collectionSource, ...deckIds]
+    .map(resolveCardId)
+    .filter((id) => id && CARDS[id]);
+  const collection = [...new Set(mappedCollection)];
+  const settings = { ...base.settings, ...(raw.settings || {}) };
+  settings.deckSize = Number(settings.deckSize) === 4 ? 4 : 8;
+  settings.map = SAVE_MAP_ALIASES[settings.map] || "green";
+  return {
+    ...base,
+    name: String(raw.name || base.name).slice(0, 16),
+    trophies: Math.max(0, Number(raw.trophies) || 0),
+    gold: Math.max(0, Number(raw.gold) || 0),
+    wins: Math.max(0, Number(raw.wins) || 0),
+    losses: Math.max(0, Number(raw.losses) || 0),
+    streak: Math.max(0, Number(raw.streak) || 0),
+    currentDeckIdx: clamp(Number(raw.currentDeckIdx) || 0, 0, 2),
+    customCards,
+    collection,
+    decks: [0, 1, 2].map((i) => normalizeDeck(deckSource[i], collection, settings.deckSize)),
+    story: normalizeStory(raw.story),
+    rivals: normalizeRivals(raw.rivals, Number(raw.trophies) || 0),
+    friends: Array.isArray(raw.friends) ? raw.friends : [],
+    socialLog: Array.isArray(raw.socialLog) ? raw.socialLog.slice(0, 8) : [],
+    league: raw.league || null,
+    leaguePoints: Math.max(0, Number(raw.leaguePoints) || 0),
+    activeTournament: raw.activeTournament || null,
+    settings
+  };
+}
+
+const canvas = $("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+const App = {
+  deckFilter: "all",
+  shopFilter: "all",
+  creator: null,
+  init() {
+    this.load();
+    this.bindInputs();
+    this.openMenu();
+  },
+  bindInputs() {
+    canvas.addEventListener("pointerdown", (e) => Game.handleArenaPointer(e));
+    canvas.addEventListener("pointermove", (e) => Game.handleArenaMove(e));
+    window.addEventListener("keydown", (e) => {
+      if (!Game.running) return;
+      if (e.key >= "1" && e.key <= "4") Game.selectHandIndex(Number(e.key) - 1);
+      if (e.key === "Escape") Game.state.selectedId = null;
+    });
+  },
+  load() {
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      player = raw ? normalizeSave(JSON.parse(raw)) : makeDefaultPlayer();
+    } catch (e) {
+      player = makeDefaultPlayer();
+    }
+    this.save();
+  },
+  save() {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(player));
+  },
+  show(id) {
+    document.querySelectorAll(".screen").forEach((screen) => screen.classList.remove("active"));
+    $(id).classList.add("active");
+    const tabs = $("bottom-tabs");
+    if (tabs) {
+      tabs.classList.toggle("hidden", id === "game-screen");
+      tabs.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.tab === id);
+      });
+    }
+    if (id !== "game-screen") $("end-overlay").classList.remove("active");
+  },
+  openMenu() {
+    Game.stop();
+    this.ensureRivals();
+    this.show("menu-screen");
+    const rank = this.rankFor(player.trophies);
+    const next = this.nextRank(player.trophies);
+    const league = LEAGUES.find((l) => l.id === player.league);
+    $("player-name").textContent = player.name + " ✎";
+    $("menu-trophies").textContent = player.trophies;
+    $("menu-gold").textContent = player.gold;
+    $("menu-wins").textContent = player.wins || 0;
+    $("menu-streak").textContent = player.streak || 0;
+    $("menu-league").textContent = league ? `${league.name} ${player.leaguePoints || 0} LP` : "No League";
+    $("rank-line").textContent = rank.name;
+    $("rank-name").textContent = rank.name;
+    $("rank-badge").textContent = rank.roman;
+    if (next) {
+      const prev = rank.min;
+      const pct = ((player.trophies - prev) / (next.min - prev)) * 100;
+      $("rank-progress").style.width = clamp(pct, 0, 100) + "%";
+      $("rank-next").textContent = `Next arena at ${next.min} trophies`;
+    } else {
+      $("rank-progress").style.width = "100%";
+      $("rank-next").textContent = "Max arena reached";
+    }
+  },
+  rankFor(trophies) {
+    let rank = RANKS[0];
+    for (const r of RANKS) if (trophies >= r.min) rank = r;
+    return rank;
+  },
+  nextRank(trophies) {
+    return RANKS.find((r) => r.min > trophies) || null;
+  },
+  changeName() {
+    const next = prompt("Enter your commander name:", player.name);
+    if (!next) return;
+    player.name = next.trim().slice(0, 16) || "Guest";
+    this.save();
+    this.openMenu();
+  },
+  currentDeck() {
+    return player.decks[player.currentDeckIdx];
+  },
+  validateDeck() {
+    const limit = player.settings.deckSize;
+    const deck = this.currentDeck().filter((id) => player.collection.includes(id) && CARDS[id]);
+    player.decks[player.currentDeckIdx] = deck;
+    if (deck.length !== limit) {
+      alert(`Your deck needs exactly ${limit} cards. Add or remove cards first.`);
+      this.openDeck();
+      return false;
+    }
+    return true;
+  },
+  startGame(mode) {
+    if (!this.validateDeck()) return;
+    this.show("game-screen");
+    Game.start(mode);
+  },
+  openStory() {
+    this.show("story-screen");
+    this.renderStory();
+  },
+  renderStory() {
+    const story = player.story || { unlocked: 1, completed: [] };
+    $("story-progress").textContent = `Chapter ${story.unlocked} of ${STORY_CHAPTERS.length} unlocked`;
+    const grid = $("story-grid");
+    grid.innerHTML = "";
+    STORY_CHAPTERS.forEach((chapter, i) => {
+      const locked = i + 1 > story.unlocked;
+      const complete = story.completed.includes(i);
+      const card = document.createElement("div");
+      card.className = "chapter-card" + (locked ? " locked" : "");
+      card.innerHTML = `
+        <div>
+          <div class="chapter-num">Chapter ${i + 1}${complete ? " • Cleared" : ""}</div>
+          <h3>${escapeHTML(chapter.title)}</h3>
+          <p>${escapeHTML(chapter.intro)}</p>
+        </div>
+        <div class="quest-list">
+          <li><span>Enemy</span><b>${escapeHTML(chapter.enemy)}</b></li>
+          <li><span>Reward</span><b>${chapter.rewardTrophies} 🏆 / ${chapter.rewardGold} 💰</b></li>
+        </div>
+      `;
+      const btn = document.createElement("button");
+      btn.className = "btn small" + (locked ? "" : " primary");
+      btn.textContent = locked ? "Locked" : complete ? "Replay" : "Start";
+      btn.disabled = locked;
+      btn.onclick = () => this.startStory(i);
+      card.appendChild(btn);
+      grid.appendChild(card);
+    });
+  },
+  startStory(index) {
+    player.story = normalizeStory(player.story);
+    if (index + 1 > player.story.unlocked) return alert("Beat the previous chapter first.");
+    if (!this.validateDeck()) return;
+    this.show("game-screen");
+    Game.start("story", index);
+  },
+  ensureRivals() {
+    player.rivals = normalizeRivals(player.rivals, player.trophies);
+  },
+  sortedLeaderboard() {
+    this.ensureRivals();
+    return [
+      ...player.rivals,
+      { id: "player", name: player.name, trophies: player.trophies, wins: player.wins || 0, losses: player.losses || 0, me: true, friend: false, mood: "Your current account" }
+    ].sort((a, b) => b.trophies - a.trophies);
+  },
+  openRivals() {
+    this.ensureRivals();
+    this.show("rivals-screen");
+    this.renderRivals();
+  },
+  renderRivals() {
+    const list = $("rival-list");
+    const board = this.sortedLeaderboard();
+    const rank = board.findIndex((r) => r.me) + 1;
+    const latest = player.socialLog?.[0] ? ` Latest: ${player.socialLog[0]}` : "";
+    $("rival-summary").textContent = `You are rank #${rank}. Friend rivals, chat, or challenge them directly.${latest}`;
+    list.innerHTML = "";
+    board.forEach((rival, i) => {
+      const row = document.createElement("div");
+      row.className = "rival-row";
+      const initials = rival.me ? "YOU" : rival.name.split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase();
+      const move = rival.me ? "" : rival.lastMove ? ` • last ${rival.lastMove > 0 ? "+" : ""}${rival.lastMove}` : " • idle";
+      row.innerHTML = `
+        <div class="avatar">${escapeHTML(initials)}</div>
+        <div class="rival-meta">
+          <div class="rival-name">#${i + 1} ${escapeHTML(rival.name)} ${rival.me ? "(You)" : ""}</div>
+          <div class="muted">🏆 ${Math.round(rival.trophies)} • ${rival.wins || 0}W/${rival.losses || 0}L${move}</div>
+          <span class="tag ${rival.friend ? "friend" : ""}">${rival.friend ? "Friend" : rival.me ? "Player" : `AI ${Math.round(rivalSkill(rival.trophies) * 100)}%`}</span>
+        </div>
+      `;
+      const actions = document.createElement("div");
+      actions.className = "rival-actions";
+      if (rival.me) {
+        actions.innerHTML = `<span class="tag">Your rank</span>`;
+      } else {
+        actions.innerHTML = `
+          <button class="btn small" data-action="friend">${rival.friend ? "Unfriend" : "Friend"}</button>
+          <button class="btn small" data-action="chat">Chat</button>
+          <button class="btn small primary" data-action="battle">Battle</button>
+        `;
+        actions.querySelector('[data-action="friend"]').onclick = () => this.friendRival(rival.id);
+        actions.querySelector('[data-action="chat"]').onclick = () => this.chatRival(rival.id);
+        actions.querySelector('[data-action="battle"]').onclick = () => this.battleRival(rival.id);
+      }
+      row.appendChild(actions);
+      list.appendChild(row);
+    });
+  },
+  findRival(id) {
+    this.ensureRivals();
+    return player.rivals.find((r) => r.id === id) || null;
+  },
+  friendRival(id) {
+    const rival = this.findRival(id);
+    if (!rival) return;
+    rival.friend = !rival.friend;
+    this.postSocial(`${rival.name} is ${rival.friend ? "now your friend" : "no longer on your friends list"}.`);
+    this.save();
+    this.renderRivals();
+  },
+  chatRival(id) {
+    const rival = this.findRival(id);
+    if (!rival) return;
+    const line = `${rival.name} ${rival.mood || RIVAL_LINES[0]}`;
+    this.postSocial(line);
+    alert(line);
+    this.save();
+    this.renderRivals();
+  },
+  battleRival(id) {
+    if (!this.findRival(id)) return;
+    if (!this.validateDeck()) return;
+    this.show("game-screen");
+    Game.start("normal", null, id);
+  },
+  refreshRivals() {
+    this.ensureRivals();
+    this.renderRivals();
+  },
+  simulateRivals(bigger = false, skipId = null) {
+    this.ensureRivals();
+    let changed = 0;
+    let idle = 0;
+    player.rivals.forEach((rival) => {
+      if (rival.id === skipId) return;
+      const activeChance = bigger ? .78 : .62;
+      if (Math.random() > activeChance) {
+        rival.lastMove = 0;
+        idle++;
+        return;
+      }
+      const skillDrift = (rivalSkill(rival.trophies) - .55) * 7;
+      const swing = Math.round(rand(bigger ? -28 : -10, bigger ? 42 : 18) + skillDrift);
+      rival.trophies = Math.max(1, rival.trophies + swing);
+      rival.lastMove = swing;
+      if (swing > 0) rival.wins += 1;
+      if (swing < -8) rival.losses += 1;
+    });
+    changed = player.rivals.filter((rival) => rival.id !== skipId && rival.lastMove).length;
+    if (changed || idle) this.postSocial(`${changed} rivals changed trophies while ${idle} stayed idle.`);
+  },
+  pickRival(forcedId = null, mode = "normal") {
+    this.ensureRivals();
+    if (forcedId) return this.findRival(forcedId);
+    const target = mode === "tournament" && player.activeTournament
+      ? (TOURNAMENTS.find((t) => t.id === player.activeTournament.id)?.min || player.trophies) + (player.activeTournament.wins || 0) * 220
+      : player.trophies;
+    const pool = [...player.rivals].sort((a, b) => Math.abs(a.trophies - target) - Math.abs(b.trophies - target)).slice(0, 6);
+    return pool[Math.floor(Math.random() * pool.length)] || player.rivals[0];
+  },
+  openEvents() {
+    this.show("events-screen");
+    this.renderEvents();
+  },
+  renderEvents() {
+    const active = player.activeTournament;
+    $("active-tournament-label").textContent = active ? `${TOURNAMENTS.find((t) => t.id === active.id)?.name || "Tournament"}: ${active.wins}/${TOURNAMENTS.find((t) => t.id === active.id)?.rounds || "?"} wins` : "No active run";
+    $("event-summary").textContent = active ? "Finish your active run for the big reward." : "Enter a bracket or join a league for extra rewards.";
+    const eventGrid = $("event-grid");
+    eventGrid.innerHTML = "";
+    TOURNAMENTS.forEach((event) => {
+      const locked = player.trophies < event.min;
+      const isActive = active?.id === event.id;
+      const card = document.createElement("div");
+      card.className = "event-card" + (locked ? " locked" : "");
+      card.innerHTML = `
+        <div>
+          <div class="chapter-num">${event.rounds} rounds • ${event.entry} gold entry</div>
+          <h3>${escapeHTML(event.name)}</h3>
+          <p>${escapeHTML(event.description)}</p>
+        </div>
+        <div class="quest-list">
+          <li><span>Required</span><b>${event.min} 🏆</b></li>
+          <li><span>Reward</span><b>${event.rewardTrophies} 🏆 / ${event.rewardGold} 💰</b></li>
+        </div>
+      `;
+      const btn = document.createElement("button");
+      btn.className = "btn small" + (locked ? "" : " primary");
+      btn.textContent = locked ? "Locked" : isActive ? "Continue Run" : active ? "Run Active" : "Enter";
+      btn.disabled = locked || (!!active && !isActive);
+      btn.onclick = () => this.enterTournament(event.id);
+      card.appendChild(btn);
+      eventGrid.appendChild(card);
+    });
+    const leagueGrid = $("league-grid");
+    leagueGrid.innerHTML = "";
+    const currentLeague = LEAGUES.find((l) => l.id === player.league);
+    $("league-label").textContent = currentLeague ? `${currentLeague.name}: ${player.leaguePoints || 0}/100 LP` : "No league";
+    LEAGUES.forEach((league) => {
+      const locked = player.trophies < league.min;
+      const joined = player.league === league.id;
+      const card = document.createElement("div");
+      card.className = "league-card" + (locked ? " locked" : "");
+      card.innerHTML = `
+        <div class="chapter-num">${league.min} trophies required</div>
+        <h3>${escapeHTML(league.name)}</h3>
+        <p>${escapeHTML(league.description)}</p>
+        <div class="tag">100 LP reward: ${league.rewardGold} 💰</div>
+      `;
+      const btn = document.createElement("button");
+      btn.className = "btn small" + (joined ? " green" : "");
+      btn.textContent = locked ? "Locked" : joined ? "Joined" : "Join League";
+      btn.disabled = locked || joined;
+      btn.onclick = () => this.joinLeague(league.id);
+      card.appendChild(btn);
+      leagueGrid.appendChild(card);
+    });
+  },
+  enterTournament(id) {
+    const event = TOURNAMENTS.find((t) => t.id === id);
+    if (!event) return;
+    if (player.trophies < event.min) return alert(`Reach ${event.min} trophies first.`);
+    if (player.activeTournament && player.activeTournament.id !== id) return alert("Finish your active tournament first.");
+    if (!player.activeTournament) {
+      if (player.gold < event.entry) return alert("Not enough gold to enter.");
+      player.gold -= event.entry;
+      player.activeTournament = { id, wins: 0, losses: 0 };
+      this.postSocial(`You entered ${event.name}.`);
+      this.save();
+    }
+    if (!this.validateDeck()) return;
+    this.show("game-screen");
+    Game.start("tournament");
+  },
+  joinLeague(id) {
+    const league = LEAGUES.find((l) => l.id === id);
+    if (!league) return;
+    if (player.trophies < league.min) return alert(`Reach ${league.min} trophies first.`);
+    player.league = id;
+    player.leaguePoints = 0;
+    this.postSocial(`You joined ${league.name}.`);
+    this.save();
+    this.renderEvents();
+  },
+  awardLeaguePoints(win, mode) {
+    if (!player.league) return "";
+    const league = LEAGUES.find((l) => l.id === player.league);
+    if (!league) return "";
+    const gain = win ? (mode === "ranked" ? 16 : mode === "tournament" ? 12 : 7) : 2;
+    player.leaguePoints = (player.leaguePoints || 0) + gain;
+    if (player.leaguePoints >= 100) {
+      player.leaguePoints -= 100;
+      player.gold += league.rewardGold;
+      return ` League bonus paid ${league.rewardGold} gold.`;
+    }
+    return ` +${gain} league points.`;
+  },
+  resolveRivalMatch(rivalId, win, mode, trophyDelta) {
+    const rival = this.findRival(rivalId);
+    if (!rival) return;
+    const swing = Math.max(8, Math.abs(Math.round(trophyDelta || 12)));
+    if (win) {
+      rival.losses += 1;
+      rival.lastMove = -Math.round(swing * .7);
+      rival.trophies = Math.max(1, rival.trophies + rival.lastMove);
+      this.postSocial(`${rival.name} wants a rematch after losing to you.`);
+    } else {
+      rival.wins += 1;
+      rival.lastMove = Math.round(swing * .8);
+      rival.trophies = Math.max(1, rival.trophies + rival.lastMove);
+      this.postSocial(`${rival.name} climbed after beating you.`);
+    }
+  },
+  postSocial(text) {
+    player.socialLog = [text, ...(player.socialLog || [])].slice(0, 8);
+  },
+  openDeck() {
+    this.show("deck-screen");
+    this.renderDeck();
+  },
+  selectPreset(idx) {
+    player.currentDeckIdx = idx;
+    this.save();
+    this.renderDeck();
+  },
+  setFilter(scope, filter, button) {
+    if (scope === "deck") this.deckFilter = filter;
+    if (scope === "shop") this.shopFilter = filter;
+    button.parentElement.querySelectorAll(".filter").forEach((btn) => btn.classList.remove("active"));
+    button.classList.add("active");
+    if (scope === "deck") this.renderDeck();
+    if (scope === "shop") this.renderShop();
+  },
+  renderDeck() {
+    const deck = this.currentDeck();
+    const limit = player.settings.deckSize;
+    $("deck-grid").innerHTML = "";
+    $("collection-grid").innerHTML = "";
+    $("deck-count").textContent = `${deck.length}/${limit}`;
+    $("deck-count").style.color = deck.length === limit ? "var(--green)" : deck.length > limit ? "var(--red)" : "var(--gold)";
+    $("preset-row").querySelectorAll(".filter").forEach((btn, i) => btn.classList.toggle("active", i === player.currentDeckIdx));
+    const avg = deck.reduce((sum, id) => sum + (CARDS[id]?.cost || 0), 0) / Math.max(1, deck.length);
+    $("deck-summary").textContent = `Average cost ${avg.toFixed(1)} • ${limit}-card mode`;
+    deck.forEach((id, idx) => {
+      const card = CARDS[id];
+      const tile = this.cardTile(card, "Remove");
+      tile.classList.add("selected");
+      tile.onclick = () => {
+        deck.splice(idx, 1);
+        this.save();
+        this.renderDeck();
+      };
+      $("deck-grid").appendChild(tile);
+    });
+    player.collection.forEach((id) => {
+      const card = CARDS[id];
+      if (!card || deck.includes(id)) return;
+      if (this.deckFilter !== "all" && card.kind !== this.deckFilter) return;
+      const tile = this.cardTile(card, "Add");
+      tile.onclick = () => {
+        if (deck.length >= limit) return alert("Deck is full.");
+        deck.push(id);
+        this.save();
+        this.renderDeck();
+      };
+      $("collection-grid").appendChild(tile);
+    });
+  },
+  cardTile(card, label = "") {
+    const tile = document.createElement("button");
+    tile.className = "card-tile";
+    tile.innerHTML = `
+      <div class="cost">${card.cost}</div>
+      <div class="rarity">${card.kind.toUpperCase()}</div>
+      <div class="card-icon">${escapeHTML(card.icon)}</div>
+      <div class="card-name">${escapeHTML(card.name)}</div>
+      <div class="card-meta">${label || this.cardMeta(card)}</div>
+    `;
+    return tile;
+  },
+  cardMeta(card) {
+    if (card.kind === "spell") return `${card.radius || 60} radius`;
+    if (card.kind === "building") return `${card.hp} HP`;
+    return `${card.hp} HP • ${card.dmg} DMG`;
+  },
+  openShop() {
+    this.show("shop-screen");
+    this.renderShop();
+  },
+  renderShop() {
+    $("shop-gold").textContent = player.gold;
+    $("shop-grid").innerHTML = "";
+    Object.values(CARDS)
+      .filter((card) => !player.collection.includes(card.id))
+      .filter((card) => this.shopFilter === "all" || card.kind === this.shopFilter)
+      .sort((a, b) => a.req - b.req || a.cost - b.cost)
+      .forEach((card) => {
+        const tile = this.cardTile(card, player.trophies < card.req ? `${card.req} trophies` : `${card.price} gold`);
+        if (player.trophies < card.req || player.gold < card.price) tile.classList.add("locked");
+        tile.onclick = () => {
+          if (player.trophies < card.req) return alert(`Reach ${card.req} trophies to unlock ${card.name}.`);
+          if (player.gold < card.price) return alert("Not enough gold.");
+          player.gold -= card.price;
+          player.collection.push(card.id);
+          this.save();
+          this.renderShop();
+        };
+        $("shop-grid").appendChild(tile);
+      });
+    if (!$("shop-grid").children.length) {
+      $("shop-grid").innerHTML = `<div class="muted">No cards available right now. Win battles or use settings to unlock more.</div>`;
+    }
+  },
+  openCreator() {
+    this.show("creator-screen");
+    $("creator-gold").textContent = player.gold;
+    this.updateCreator();
+  },
+  balanceCreatorStats(hp, dmg, range, count) {
+    return balanceCreatedCardStats(hp, dmg, range, count);
+  },
+  updateCreator() {
+    const name = $("creator-name").value.trim().slice(0, 14) || "My Card";
+    const icon = $("creator-icon").value.trim() || "👾";
+    const hp = Number($("creator-hp").value);
+    const dmg = Number($("creator-dmg").value);
+    const range = Number($("creator-range").value);
+    const count = Number($("creator-count").value);
+    const balanced = this.balanceCreatorStats(hp, dmg, range, count);
+    this.creator = { name, icon, range, count, rawHp: hp, rawDmg: dmg, ...balanced };
+    $("creator-hp-label").textContent = hp;
+    $("creator-dmg-label").textContent = dmg;
+    $("creator-range-label").textContent = range < 40 ? "Melee" : range;
+    $("creator-count-label").textContent = count;
+    $("preview-cost").textContent = balanced.cost;
+    $("preview-icon").textContent = icon;
+    $("preview-name").textContent = name;
+    $("preview-stats").textContent = `Balanced HP ${balanced.hp} | DMG ${balanced.dmg} | x${count}`;
+    $("preview-price").textContent = `Craft cost: ${balanced.price} gold • ${balanced.hitSpeed}s hit`;
+  },
+  craftCard() {
+    this.updateCreator();
+    const c = this.creator;
+    if (player.gold < c.price) return alert("Not enough gold to craft this card.");
+    const id = "custom_" + Date.now();
+    const card = {
+      id,
+      name: c.name,
+      icon: c.icon,
+      kind: "troop",
+      cost: c.cost,
+      rawHp: c.rawHp,
+      rawDmg: c.rawDmg,
+      hp: c.hp,
+      dmg: c.dmg,
+      speed: c.speed,
+      range: c.range,
+      hitSpeed: c.hitSpeed,
+      count: c.count,
+      scale: c.count > 1 ? 24 : c.range > 90 ? 27 : 30,
+      mass: c.count > 1 ? 8 + Math.round(c.hp / 240) : 20 + Math.round(c.hp / 220),
+      role: c.range > 90 ? "ranged" : c.count > 2 ? "swarm" : "fighter",
+      req: 0,
+      price: 0,
+      custom: true
+    };
+    player.gold -= c.price;
+    player.customCards.push(card);
+    player.collection.push(id);
+    CARDS[id] = card;
+    this.save();
+    alert(`${c.name} crafted.`);
+    this.openDeck();
+  },
+  openSettings() {
+    this.show("settings-screen");
+    $("deck-size-btn").textContent = `${player.settings.deckSize} Cards`;
+    $("map-btn").textContent = this.map().name;
+  },
+  map() {
+    return MAPS.find((m) => m.id === player.settings.map) || MAPS[0];
+  },
+  toggleDeckSize() {
+    player.settings.deckSize = player.settings.deckSize === 8 ? 4 : 8;
+    this.save();
+    this.openSettings();
+  },
+  cycleMap() {
+    const i = MAPS.findIndex((m) => m.id === player.settings.map);
+    player.settings.map = MAPS[(i + 1) % MAPS.length].id;
+    this.save();
+    this.openSettings();
+  },
+  devBoost() {
+    player.collection = Object.keys(CARDS);
+    player.gold = Math.max(player.gold, 15000);
+    player.trophies = Math.max(player.trophies, 2200);
+    const powerDeck = ["mega_knight", "pekka", "sparky", "wizard", "freeze", "fireball", "poison", "hog_rider"]
+      .filter((id) => CARDS[id]);
+    player.decks = player.decks.map(() => powerDeck.slice(0, player.settings.deckSize));
+    this.save();
+    alert("Everything is unlocked. I also loaded a strong deck and gave you 15,000 gold.");
+    this.openMenu();
+  },
+  resetData() {
+    if (!confirm("Reset all progress?")) return;
+    localStorage.removeItem(SAVE_KEY);
+    player = makeDefaultPlayer();
+    this.save();
+    this.openMenu();
+  },
+  openSave(mode) {
+    $("save-modal").classList.add("active");
+    $("save-title").textContent = mode === "export" ? "Your Save Code" : "Paste Save Code";
+    $("copy-save-btn").style.display = mode === "export" ? "block" : "none";
+    $("load-save-btn").style.display = mode === "import" ? "block" : "none";
+    $("save-area").readOnly = mode === "export";
+    $("save-area").value = mode === "export" ? encodeSave(player) : "";
+    if (mode === "export") $("save-area").select();
+  },
+  closeSave() {
+    $("save-modal").classList.remove("active");
+  },
+  async copySave() {
+    $("save-area").select();
+    try {
+      await navigator.clipboard.writeText($("save-area").value);
+      alert("Save copied.");
+    } catch (e) {
+      document.execCommand("copy");
+      alert("Save copied.");
+    }
+  },
+  loadSaveCode() {
+    try {
+      const data = decodeSave($("save-area").value.trim());
+      if (!data || !Array.isArray(data.collection)) throw new Error("bad save");
+      player = normalizeSave(data);
+      this.save();
+      this.closeSave();
+      this.openMenu();
+      alert("Save loaded. Old card IDs were converted when needed.");
+    } catch (e) {
+      alert("That save code did not load.");
+    }
+  }
+};
+
+function encodeSave(obj) {
+  const bytes = new TextEncoder().encode(JSON.stringify(obj));
+  let bin = "";
+  bytes.forEach((b) => bin += String.fromCharCode(b));
+  return btoa(bin);
+}
+function decodeSave(code) {
+  const bin = atob(code);
+  const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+
+const Game = {
+  running: false,
+  last: 0,
+  state: null,
+  mouse: { x: WIDTH / 2, y: HEIGHT / 2 },
+  start(mode, storyIndex = 0, forcedRivalId = null) {
+    this.running = true;
+    this.last = performance.now();
+    const story = mode === "story" ? STORY_CHAPTERS[storyIndex] : null;
+    const rival = !story && mode !== "boss" ? App.pickRival(forcedRivalId, mode) : null;
+    const tournament = mode === "tournament" && player.activeTournament ? TOURNAMENTS.find((t) => t.id === player.activeTournament.id) : null;
+    const enemyTrophies = story ? story.trophies : rival ? rival.trophies : mode === "boss" ? 6400 : Math.max(1, player.trophies + Math.floor(rand(-120, 160)));
+    const skill = story ? story.skill : rival ? rivalSkill(enemyTrophies) : mode === "boss" ? 1.15 : clamp(.25 + enemyTrophies / 5200, .25, 1);
+    const enemyName = story ? story.enemy : rival ? rival.name : mode === "boss" ? "THE FINAL DOME" : BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)];
+    const playerDeck = [...App.currentDeck()];
+    this.shuffle(playerDeck);
+    const enemyDeck = story ? [...story.deck].filter((id) => CARDS[id]) : this.makeEnemyDeck(enemyTrophies, mode);
+    while (enemyDeck.length < player.settings.deckSize) enemyDeck.push(DEFAULT_DECK[enemyDeck.length % DEFAULT_DECK.length]);
+    this.shuffle(enemyDeck);
+    this.state = {
+      mode,
+      storyIndex: story ? storyIndex : null,
+      story,
+      rivalId: rival ? rival.id : null,
+      tournamentId: tournament ? tournament.id : null,
+      time: story ? story.time : 180,
+      overtime: false,
+      elixirMult: mode === "triple" ? 3 : 1,
+      selectedId: null,
+      map: story ? (MAPS.find((m) => m.id === story.map) || App.map()) : App.map(),
+      shake: 0,
+      crowns: { blue: 0, red: 0 },
+      blue: { elixir: mode === "boss" ? 7 : 6, hand: playerDeck.splice(0, 4), queue: playerDeck },
+      red: { elixir: mode === "boss" ? 4.5 : 4, hand: enemyDeck.splice(0, 4), queue: enemyDeck, timer: 1.1, skill, name: enemyName, trophies: enemyTrophies },
+      entities: [],
+      projectiles: [],
+      particles: [],
+      areas: [],
+      log: []
+    };
+    $("end-overlay").classList.remove("active");
+    $("mode-label").textContent = story ? `Chapter ${storyIndex + 1}` : mode === "tournament" ? "Tournament" : mode === "normal" ? "Battle" : mode === "ranked" ? "Ranked" : mode === "boss" ? "Boss Rush" : "3x Elixir";
+    $("hud-player").textContent = player.name;
+    $("hud-enemy").textContent = enemyName;
+    $("enemy-skill").textContent = `AI ${Math.round(skill * 100)}% • 🏆 ${Math.round(enemyTrophies)}`;
+    this.spawnTower(WIDTH / 2, HEIGHT - 96, BLUE, "king");
+    this.spawnTower(92, HEIGHT - 168, BLUE, "princess");
+    this.spawnTower(WIDTH - 92, HEIGHT - 168, BLUE, "princess");
+    const bossTower = mode === "boss" || story?.boss;
+    this.spawnTower(WIDTH / 2, 86, RED, "king", bossTower);
+    if (!bossTower) {
+      this.spawnTower(92, 158, RED, "princess");
+      this.spawnTower(WIDTH - 92, 158, RED, "princess");
+    }
+    this.renderHand();
+    this.log(story ? story.intro : tournament ? `${enemyName} is your ${tournament.name} opponent.` : rival ? `${enemyName} challenged you from the leaderboard.` : `${enemyName} entered the arena.`);
+    this.message(story ? story.title.toUpperCase() : mode === "tournament" ? "TOURNAMENT" : mode === "boss" ? "BOSS RUSH!" : "FIGHT!");
+    requestAnimationFrame((t) => this.loop(t));
+  },
+  stop() {
+    this.running = false;
+  },
+  quitToMenu() {
+    this.stop();
+    $("end-overlay").classList.remove("active");
+    App.openMenu();
+  },
+  confirmQuit() {
+    this.quitToMenu();
+  },
+  loop(t) {
+    if (!this.running) return;
+    const dt = Math.min((t - this.last) / 1000, .08);
+    this.last = t;
+    this.update(dt);
+    this.draw();
+    requestAnimationFrame((next) => this.loop(next));
+  },
+  shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  },
+  makeEnemyDeck(trophies, mode) {
+    if (mode === "boss") return ["mega_knight", "pekka", "sparky", "wizard", "freeze", "fireball", "poison", "tombstone"];
+    const valid = Object.values(CARDS).filter((c) => c.req <= trophies + 150 && !c.custom);
+    const troops = valid.filter((c) => c.kind === "troop");
+    const spells = valid.filter((c) => c.kind === "spell");
+    const buildings = valid.filter((c) => c.kind === "building");
+    const deck = [];
+    const pick = (list) => {
+      const card = list[Math.floor(Math.random() * list.length)];
+      if (card && !deck.includes(card.id)) deck.push(card.id);
+    };
+    pick(troops.filter((c) => c.role === "tank" || c.preferBuildings));
+    pick(troops.filter((c) => c.role === "splash"));
+    pick(troops.filter((c) => c.role === "ranged"));
+    pick(troops.filter((c) => c.role === "swarm"));
+    pick(spells.filter((c) => c.subtype === "damage"));
+    pick(spells);
+    pick(buildings);
+    while (deck.length < player.settings.deckSize) pick(valid);
+    return deck.slice(0, player.settings.deckSize);
+  },
+  spawnTower(x, y, team, type, boss = false) {
+    const tower = new Tower(x, y, team, type, boss);
+    this.state.entities.push(tower);
+    return tower;
+  },
+  update(dt) {
+    const s = this.state;
+    s.time -= dt;
+    if (!s.overtime && s.time <= 60 && s.elixirMult === 1) {
+      s.elixirMult = 2;
+      this.message("DOUBLE ELIXIR");
+      this.log("Double elixir started.");
+    }
+    if (s.time <= 0) this.resolveClockEnd();
+    const blueRate = .84 * s.elixirMult * dt;
+    const redRate = this.enemyElixirRate() * s.elixirMult * dt;
+    s.blue.elixir = clamp(s.blue.elixir + blueRate, 0, 10);
+    s.red.elixir = clamp(s.red.elixir + redRate, 0, 10);
+    this.aiUpdate(dt);
+    s.areas.forEach((a) => a.update(dt));
+    s.entities.forEach((e) => e.update(dt));
+    s.projectiles.forEach((p) => p.update(dt));
+    s.particles.forEach((p) => p.update(dt));
+    this.resolveCollisions();
+    s.entities = s.entities.filter((e) => !e.dead);
+    s.projectiles = s.projectiles.filter((p) => !p.dead);
+    s.particles = s.particles.filter((p) => p.life > 0);
+    s.areas = s.areas.filter((a) => a.life > 0);
+    this.renderHud();
+  },
+  renderHud() {
+    const s = this.state;
+    const mins = Math.floor(Math.max(0, s.time) / 60);
+    const secs = Math.floor(Math.max(0, s.time) % 60);
+    $("timer").textContent = `${mins}:${String(secs).padStart(2, "0")}`;
+    $("blue-crowns").textContent = `${s.crowns.blue} crown${s.crowns.blue === 1 ? "" : "s"}`;
+    $("red-crowns").textContent = `${s.crowns.red} crown${s.crowns.red === 1 ? "" : "s"}`;
+    $("elixir-fill").style.width = `${s.blue.elixir * 10}%`;
+    $("elixir-text").textContent = `${Math.floor(s.blue.elixir)}/10`;
+    $("enemy-elixir").textContent = Math.floor(s.red.elixir);
+    $("alive-count").textContent = s.entities.filter((e) => !e.dead && !(e instanceof Tower)).length;
+    this.updateHandUI();
+  },
+  resolveClockEnd() {
+    const s = this.state;
+    if (!s.overtime && s.crowns.blue === s.crowns.red) {
+      s.overtime = true;
+      s.time = 60;
+      s.elixirMult = Math.max(2, s.elixirMult);
+      this.message("SUDDEN DEATH");
+      this.log("Overtime: next tower wins.");
+      return;
+    }
+    if (s.crowns.blue !== s.crowns.red) return this.end(s.crowns.blue > s.crowns.red, "Crown lead");
+    const blueHp = this.towerHp(BLUE);
+    const redHp = this.towerHp(RED);
+    this.end(blueHp >= redHp, "Tie breaker");
+  },
+  towerHp(team) {
+    return this.state.entities
+      .filter((e) => e.team === team && e instanceof Tower)
+      .reduce((sum, e) => sum + Math.max(0, e.hp), 0);
+  },
+  enemyElixirRate() {
+    if (this.state.mode === "boss") return .62;
+    if (this.state.mode === "ranked") return .60;
+    if (this.state.mode === "triple") return .56;
+    return .54;
+  },
+  aiUpdate(dt) {
+    const s = this.state;
+    s.red.timer -= dt;
+    if (s.red.timer > 0) return;
+    const reaction = clamp(2.75 - s.red.skill * .85, 1.25, 2.55);
+    const play = this.chooseAIPlay();
+    if (play) {
+      this.playCard(RED, play.id, play.x, play.y);
+      s.red.timer = reaction + rand(.25, .95);
+    } else {
+      s.red.timer = .45;
+    }
+  },
+  chooseAIPlay() {
+    const s = this.state;
+    const hand = s.red.hand.map((id) => CARDS[id]).filter((c) => c && c.cost <= s.red.elixir);
+    if (!hand.length) return null;
+    const threats = this.threatsAgainst(RED);
+    const reserve = s.mode === "triple" ? .8 : 1.35 + s.red.skill * .85;
+    const affordable = hand.filter((c) => s.red.elixir >= c.cost + reserve || (threats.total > 950 && s.red.elixir >= c.cost));
+    if (!affordable.length) return null;
+    const spell = affordable
+      .filter((c) => c.kind === "spell" && c.subtype !== "rage" && c.subtype !== "heal")
+      .map((c) => ({ card: c, target: this.bestSpellTarget(c, BLUE) }))
+      .filter((p) => p.target && p.target.value > p.card.cost * 150)
+      .sort((a, b) => b.target.value - a.target.value)[0];
+    if (spell && (threats.total > 520 || s.red.elixir > 8.75)) return { id: spell.card.id, x: spell.target.x, y: spell.target.y };
+    if (threats.total > 360) {
+      const laneX = threats.left > threats.right ? 112 : WIDTH - 112;
+      const defenders = affordable
+        .filter((c) => c.kind !== "spell")
+        .sort((a, b) => this.counterScore(b, threats) - this.counterScore(a, threats));
+      if (defenders[0]) {
+        const y = clamp(threats.y - 48, 96, RIVER_Y - 52);
+        return { id: defenders[0].id, x: laneX + rand(-34, 34), y };
+      }
+    }
+    if (s.red.elixir < 8.25 && s.mode !== "triple") return null;
+    const enemyLeft = this.towerAt(BLUE, "princess", "left");
+    const enemyRight = this.towerAt(BLUE, "princess", "right");
+    const laneX = !enemyLeft ? 112 : !enemyRight ? WIDTH - 112 : (enemyLeft.hp < enemyRight.hp ? 112 : WIDTH - 112);
+    const activeTank = s.entities.some((e) => e.team === RED && e.card && (e.card.role === "tank" || e.card.preferBuildings));
+    let pick = affordable.find((c) => !activeTank && c.kind === "troop" && (c.role === "tank" || c.preferBuildings));
+    if (!pick) pick = affordable.find((c) => c.kind === "troop" && (c.role === "ranged" || c.role === "splash"));
+    if (!pick) pick = affordable.find((c) => c.kind !== "spell");
+    if (!pick) {
+      const rage = affordable.find((c) => c.subtype === "rage" || c.subtype === "heal");
+      if (rage) {
+        const redPush = s.entities.find((e) => e.team === RED && e.y > RIVER_Y - 80 && !(e instanceof Tower));
+        if (redPush) return { id: rage.id, x: redPush.x, y: redPush.y };
+      }
+      return null;
+    }
+    const y = pick.preferBuildings || pick.role === "swarm" ? RIVER_Y - 62 : 124;
+    return { id: pick.id, x: laneX + rand(-24, 24), y: y + rand(-12, 12) };
+  },
+  threatsAgainst(team) {
+    const attackers = this.state.entities.filter((e) => e.team !== team && !(e instanceof Tower) && !e.dead);
+    const data = { left: 0, right: 0, total: 0, y: RIVER_Y };
+    attackers.forEach((e) => {
+      const lane = e.x < WIDTH / 2 ? "left" : "right";
+      const onOurSide = team === RED ? e.y < RIVER_Y + 60 : e.y > RIVER_Y - 60;
+      const pressure = (e.hp || 0) * (onOurSide ? .72 : .25) + (e.damage || 0) * 4;
+      data[lane] += pressure;
+      data.total += pressure;
+      data.y = Math.min(data.y, e.y);
+    });
+    return data;
+  },
+  counterScore(card, threats) {
+    let score = 0;
+    if (card.kind === "building") score += 80;
+    if (card.role === "splash" && Math.max(threats.left, threats.right) > 450) score += 120;
+    if (card.role === "killer") score += 90;
+    if (card.role === "swarm") score += 55;
+    score += (card.hp || 250) / 18 + (card.dmg || 60) * 1.3 - card.cost * 28;
+    return score;
+  },
+  bestSpellTarget(card, targetTeam) {
+    const targets = this.state.entities.filter((e) => e.team === targetTeam && !e.dead);
+    let best = null;
+    targets.forEach((candidate) => {
+      let value = 0;
+      targets.forEach((e) => {
+        const d = Math.hypot(e.x - candidate.x, e.y - candidate.y);
+        if (d <= (card.radius || 60) + e.radius) {
+          const towerPenalty = e instanceof Tower ? .55 : 1;
+          value += Math.min(card.dmg || 80, e.hp || 1) * towerPenalty + (e instanceof Tower ? 60 : 95);
+        }
+      });
+      if (!best || value > best.value) best = { x: candidate.x, y: candidate.y, value };
+    });
+    return best;
+  },
+  towerAt(team, type, lane) {
+    return this.state.entities.find((e) => e instanceof Tower && e.team === team && e.type === type && (lane === "left" ? e.x < WIDTH / 2 : e.x > WIDTH / 2));
+  },
+  selectHandIndex(i) {
+    const id = this.state.blue.hand[i];
+    if (!id || CARDS[id].cost > this.state.blue.elixir) return;
+    this.state.selectedId = this.state.selectedId === id ? null : id;
+    this.updateHandUI();
+  },
+  renderHand() {
+    $("hand").innerHTML = "";
+    this.state.blue.hand.forEach((id, i) => {
+      const card = CARDS[id];
+      const button = document.createElement("button");
+      button.className = "hand-card";
+      button.dataset.card = id;
+      button.onclick = () => this.selectHandIndex(i);
+      button.innerHTML = `<div class="cost">${card.cost}</div><div class="card-icon">${escapeHTML(card.icon)}</div><div class="card-name">${escapeHTML(card.name)}</div>`;
+      $("hand").appendChild(button);
+    });
+    const next = this.state.blue.queue[0];
+    $("next-icon").textContent = next ? CARDS[next].icon : "?";
+  },
+  updateHandUI() {
+    document.querySelectorAll(".hand-card").forEach((btn) => {
+      const id = btn.dataset.card;
+      const card = CARDS[id];
+      btn.classList.toggle("disabled", card.cost > this.state.blue.elixir);
+      btn.classList.toggle("selected", id === this.state.selectedId);
+    });
+  },
+  handleArenaMove(e) {
+    const p = this.canvasPoint(e);
+    this.mouse = p;
+  },
+  handleArenaPointer(e) {
+    if (!this.running || !this.state.selectedId) return;
+    e.preventDefault();
+    const p = this.canvasPoint(e);
+    this.deploySelected(p.x, p.y);
+  },
+  canvasPoint(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: clamp((e.clientX - rect.left) * (WIDTH / rect.width), 0, WIDTH),
+      y: clamp((e.clientY - rect.top) * (HEIGHT / rect.height), 0, HEIGHT)
+    };
+  },
+  deploySelected(x, y) {
+    const id = this.state.selectedId;
+    const card = CARDS[id];
+    if (!card || card.cost > this.state.blue.elixir) return;
+    if (!this.validDeploy(BLUE, card, x, y)) {
+      this.floatText(x, y, "Invalid", "#ff5c66");
+      this.state.shake = 5;
+      return;
+    }
+    this.playCard(BLUE, id, x, y);
+  },
+  validDeploy(team, card, x, y) {
+    if (card.kind === "spell") return true;
+    if (team === BLUE) {
+      if (y > RIVER_Y + 18) return true;
+      const limit = 198;
+      if (x < WIDTH / 2 && !this.towerAt(RED, "princess", "left") && y > limit) return true;
+      if (x >= WIDTH / 2 && !this.towerAt(RED, "princess", "right") && y > limit) return true;
+      return false;
+    }
+    return y < RIVER_Y - 18;
+  },
+  playCard(team, id, x, y) {
+    const card = CARDS[id];
+    const side = team === BLUE ? this.state.blue : this.state.red;
+    if (!card || side.elixir < card.cost) return false;
+    side.elixir -= card.cost;
+    if (card.kind === "spell") this.castSpell(team, card, x, y);
+    else if (card.kind === "building") this.spawnBuilding(team, card, x, y);
+    else this.spawnTroop(team, card, x, y);
+    this.cycle(team, id);
+    if (team === BLUE) this.state.selectedId = null;
+    this.renderHand();
+    this.log(`${team === BLUE ? player.name : this.state.red.name} played ${card.name}.`);
+    return true;
+  },
+  cycle(team, id) {
+    const side = team === BLUE ? this.state.blue : this.state.red;
+    const idx = side.hand.indexOf(id);
+    if (idx >= 0) side.hand.splice(idx, 1);
+    side.queue.push(id);
+    side.hand.push(side.queue.shift());
+  },
+  spawnTroop(team, card, x, y) {
+    const count = card.count || 1;
+    for (let i = 0; i < count; i++) {
+      const angle = (i / Math.max(1, count)) * Math.PI * 2;
+      const spread = count === 1 ? 0 : 18 + Math.min(18, count * 2);
+      const unit = new Unit(x + Math.cos(angle) * spread + rand(-5, 5), y + Math.sin(angle) * spread + rand(-5, 5), team, card);
+      this.state.entities.push(unit);
+    }
+    if (card.spawnSplash) this.damageArea(team, x, y, 64, card.spawnSplash, { color: "#6d62ff" });
+    for (let i = 0; i < 12; i++) this.state.particles.push(new Particle(x + rand(-28, 28), y + rand(-20, 20), null, "#ffffff"));
+  },
+  spawnBuilding(team, card, x, y) {
+    this.state.entities.push(new Building(x, y, team, card));
+    for (let i = 0; i < 10; i++) this.state.particles.push(new Particle(x + rand(-20, 20), y + rand(-18, 18), null, "#ffd166"));
+  },
+  castSpell(team, card, x, y) {
+    if (card.subtype === "rage" || card.subtype === "heal") {
+      this.state.areas.push(new AreaEffect(x, y, team, card));
+      return;
+    }
+    const sx = team === BLUE ? WIDTH / 2 : WIDTH / 2;
+    const sy = team === BLUE ? HEIGHT + 30 : -30;
+    this.state.projectiles.push(new Projectile(sx, sy, { x, y }, team, card.dmg || 0, {
+      splash: card.radius || 60,
+      color: card.color || "#fff",
+      status: { stun: card.stun || 0 },
+      areaCard: card.subtype === "poison" ? card : null,
+      speed: card.subtype === "zap" ? 3.5 : 1.9
+    }));
+  },
+  damageArea(team, x, y, radius, dmg, opts = {}) {
+    const enemy = otherTeam(team);
+    this.state.entities.forEach((e) => {
+      if (e.team !== enemy || e.dead) return;
+      const d = Math.hypot(e.x - x, e.y - y);
+      if (d <= radius + e.radius) {
+        e.takeDamage(dmg, team);
+        if (opts.status?.stun) e.effects.stun = Math.max(e.effects.stun || 0, opts.status.stun);
+      }
+    });
+    for (let i = 0; i < 16; i++) this.state.particles.push(new Particle(x + rand(-radius * .55, radius * .55), y + rand(-radius * .55, radius * .55), null, opts.color || "#ffd166"));
+    this.state.shake = Math.max(this.state.shake, 4);
+  },
+  healArea(team, x, y, radius, amount) {
+    this.state.entities.forEach((e) => {
+      if (e.team === team && !e.dead && !(e instanceof Tower) && Math.hypot(e.x - x, e.y - y) <= radius + e.radius) {
+        e.hp = clamp(e.hp + amount, 0, e.maxHp);
+        this.floatText(e.x, e.y - 20, "+" + amount, "#38d989");
+      }
+    });
+  },
+  resolveCollisions() {
+    const movers = this.state.entities.filter((e) => !e.dead && e.mass < 9000);
+    for (let i = 0; i < movers.length; i++) {
+      const a = movers[i];
+      for (let j = i + 1; j < movers.length; j++) {
+        const b = movers[j];
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const d = Math.hypot(dx, dy) || .001;
+        const min = a.radius + b.radius;
+        if (d < min) {
+          const push = (min - d) / 2;
+          const nx = dx / d;
+          const ny = dy / d;
+          const aShare = b.mass / (a.mass + b.mass);
+          const bShare = a.mass / (a.mass + b.mass);
+          a.x += nx * push * aShare;
+          a.y += ny * push * aShare;
+          b.x -= nx * push * bShare;
+          b.y -= ny * push * bShare;
+        }
+      }
+      a.x = clamp(a.x, 24, WIDTH - 24);
+      a.y = clamp(a.y, 34, HEIGHT - 34);
+    }
+  },
+  enemies(team) {
+    return this.state.entities.filter((e) => e.team !== team && !e.dead);
+  },
+  allies(team) {
+    return this.state.entities.filter((e) => e.team === team && !e.dead);
+  },
+  onDeath(entity, sourceTeam) {
+    if (entity instanceof Tower) {
+      const scorer = otherTeam(entity.team);
+      this.state.crowns[scorer]++;
+      this.log(`${entity.team === BLUE ? "Blue" : "Red"} ${entity.type} tower fell.`);
+      this.message(entity.type === "king" ? "KING DOWN!" : "+1 CROWN");
+      if (entity.type === "king" || this.state.overtime) this.end(scorer === BLUE, entity.type === "king" ? "King tower destroyed" : "Sudden death tower");
+    }
+    if (entity.card?.spawnId && entity instanceof Building) {
+      const spawn = CARDS[entity.card.spawnId];
+      if (spawn) this.spawnTroop(entity.team, spawn, entity.x, entity.y);
+    }
+  },
+  end(win, reason) {
+    if (!this.running) return;
+    this.running = false;
+    const ranked = this.state.mode === "ranked";
+    const boss = this.state.mode === "boss";
+    const story = this.state.story;
+    const tournament = this.state.mode === "tournament" && player.activeTournament ? TOURNAMENTS.find((t) => t.id === player.activeTournament.id) : null;
+    const crownBonus = Math.max(0, this.state.crowns.blue - this.state.crowns.red) * 3;
+    let trophies = win ? 18 + crownBonus : -7;
+    let gold = win ? 120 + this.state.crowns.blue * 35 : 50;
+    let extra = `${this.state.crowns.blue}-${this.state.crowns.red} crowns • ${reason}`;
+    if (story) {
+      player.story = normalizeStory(player.story);
+      const alreadyCleared = player.story.completed.includes(this.state.storyIndex);
+      trophies = win ? (alreadyCleared ? Math.round(story.rewardTrophies * .25) : story.rewardTrophies) : 0;
+      gold = win ? (alreadyCleared ? Math.round(story.rewardGold * .35) : story.rewardGold) : 60;
+      if (win && !alreadyCleared) {
+        player.story.completed.push(this.state.storyIndex);
+        player.story.unlocked = clamp(Math.max(player.story.unlocked, this.state.storyIndex + 2), 1, STORY_CHAPTERS.length);
+      }
+      extra = win ? story.win : "The chapter is still open. Upgrade your deck and try again.";
+    } else if (tournament) {
+      if (win) {
+        player.activeTournament.wins += 1;
+        if (player.activeTournament.wins >= tournament.rounds) {
+          trophies = tournament.rewardTrophies;
+          gold = tournament.rewardGold;
+          extra = `${tournament.name} won! Full tournament reward paid.`;
+          player.activeTournament = null;
+        } else {
+          trophies = 0;
+          gold = 75;
+          extra = `${tournament.name}: ${player.activeTournament.wins}/${tournament.rounds} wins. Continue from Tournaments.`;
+        }
+      } else {
+        player.activeTournament = null;
+        trophies = 0;
+        gold = 35;
+        extra = `${tournament.name} run ended. You kept a small consolation reward.`;
+      }
+    } else {
+      if (ranked) { trophies = win ? 26 + crownBonus : -10; gold += 45; }
+      if (boss && win) { trophies += 55; gold += 260; }
+      if (this.state.mode === "triple") gold += 45;
+    }
+    if (win) {
+      player.wins = (player.wins || 0) + 1;
+      player.streak = (player.streak || 0) + 1;
+    } else {
+      player.losses = (player.losses || 0) + 1;
+      player.streak = 0;
+    }
+    player.trophies = Math.max(0, player.trophies + trophies);
+    player.gold += gold;
+    if (this.state.rivalId) App.resolveRivalMatch(this.state.rivalId, win, this.state.mode, trophies);
+    App.simulateRivals(ranked || !!tournament || boss, this.state.rivalId);
+    const leagueNote = App.awardLeaguePoints(win, this.state.mode);
+    if (leagueNote) extra += leagueNote;
+    App.save();
+    $("end-title").textContent = win ? "Victory!" : "Defeat";
+    $("end-title").style.color = win ? "#0f7d4f" : "#bc2431";
+    $("end-detail").textContent = `${trophies >= 0 ? "+" : ""}${trophies} trophies • +${gold} gold`;
+    $("end-extra").textContent = extra;
+    $("end-overlay").classList.add("active");
+  },
+  log(text) {
+    const s = this.state;
+    s.log.unshift(text);
+    s.log = s.log.slice(0, 12);
+    $("battle-log").innerHTML = s.log.map((line) => `<div class="log-line">${escapeHTML(line)}</div>`).join("");
+  },
+  message(text) {
+    const el = $("battle-message");
+    el.textContent = text;
+    el.classList.remove("pop");
+    void el.offsetWidth;
+    el.classList.add("pop");
+  },
+  floatText(x, y, text, color) {
+    this.state.particles.push(new Particle(x, y, text, color, true));
+  },
+  draw() {
+    const s = this.state;
+    ctx.save();
+    if (s.shake > 0) {
+      ctx.translate(rand(-s.shake, s.shake), rand(-s.shake, s.shake));
+      s.shake *= .82;
+      if (s.shake < .2) s.shake = 0;
+    }
+    this.drawArena();
+    if (s.selectedId) this.drawDeployOverlay(CARDS[s.selectedId]);
+    s.areas.forEach((a) => a.draw());
+    [...s.entities].sort((a, b) => a.y - b.y).forEach((e) => e.draw());
+    s.projectiles.forEach((p) => p.draw());
+    s.particles.forEach((p) => p.draw());
+    ctx.restore();
+  },
+  drawArena() {
+    const m = this.state.map;
+    ctx.fillStyle = m.grass;
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    for (let y = 0; y < HEIGHT; y += 52) {
+      ctx.fillStyle = (y / 52) % 2 ? m.grass : m.grass2;
+      ctx.fillRect(0, y, WIDTH, 26);
+    }
+    ctx.strokeStyle = "rgba(255,255,255,.12)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(WIDTH / 2, 0);
+    ctx.lineTo(WIDTH / 2, HEIGHT);
+    ctx.stroke();
+    ctx.fillStyle = m.river;
+    ctx.fillRect(0, RIVER_Y - 24, WIDTH, 48);
+    ctx.fillStyle = "rgba(255,255,255,.13)";
+    for (let x = -20; x < WIDTH; x += 60) {
+      ctx.beginPath();
+      ctx.ellipse(x, RIVER_Y - 4, 34, 6, -.25, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.fillStyle = m.bridge;
+    [BRIDGE_LEFT, BRIDGE_RIGHT].forEach((x) => {
+      roundRect(ctx, x - 30, RIVER_Y - 32, 60, 64, 8);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(0,0,0,.24)";
+      ctx.lineWidth = 4;
+      ctx.stroke();
+    });
+    ctx.strokeStyle = m.road;
+    ctx.lineWidth = 26;
+    ctx.lineCap = "round";
+    ctx.globalAlpha = .92;
+    ctx.beginPath();
+    ctx.moveTo(92, 110); ctx.lineTo(BRIDGE_LEFT, RIVER_Y); ctx.lineTo(92, HEIGHT - 148);
+    ctx.moveTo(WIDTH - 92, 110); ctx.lineTo(BRIDGE_RIGHT, RIVER_Y); ctx.lineTo(WIDTH - 92, HEIGHT - 148);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  },
+  drawDeployOverlay(card) {
+    ctx.save();
+    ctx.fillStyle = card.kind === "spell" ? "rgba(255,209,102,.10)" : "rgba(54,163,255,.12)";
+    if (card.kind === "spell") ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    else {
+      ctx.fillRect(0, RIVER_Y + 18, WIDTH, HEIGHT - RIVER_Y - 18);
+      if (!this.towerAt(RED, "princess", "left")) ctx.fillRect(0, 198, WIDTH / 2, RIVER_Y - 180);
+      if (!this.towerAt(RED, "princess", "right")) ctx.fillRect(WIDTH / 2, 198, WIDTH / 2, RIVER_Y - 180);
+    }
+    const p = this.mouse;
+    const valid = this.validDeploy(BLUE, card, p.x, p.y);
+    ctx.strokeStyle = valid ? "#ffd166" : "#ff5c66";
+    ctx.fillStyle = valid ? "rgba(255,209,102,.14)" : "rgba(255,92,102,.12)";
+    ctx.lineWidth = 3;
+    if (card.kind === "spell") {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, card.radius || 60, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 26, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.font = `${card.scale || 28}px Arial`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "rgba(255,255,255,.88)";
+      ctx.fillText(card.icon, p.x, p.y - 6);
+    }
+    ctx.restore();
+  }
+};
+
+class Entity {
+  constructor(x, y, team, hp) {
+    this.x = x;
+    this.y = y;
+    this.team = team;
+    this.hp = hp;
+    this.maxHp = hp;
+    this.dead = false;
+    this.radius = 14;
+    this.mass = 10;
+    this.effects = { rage: 0, slow: 0, stun: 0 };
+    this.hitFlash = 0;
+  }
+  updateEffects(dt) {
+    Object.keys(this.effects).forEach((k) => this.effects[k] = Math.max(0, this.effects[k] - dt));
+  }
+  takeDamage(amount, sourceTeam) {
+    if (this.dead || amount <= 0) return;
+    const dmg = Math.round(amount);
+    this.hp -= dmg;
+    this.hitFlash = .18;
+    Game.floatText(this.x, this.y - 28, dmg, "#ffffff");
+    if (this.hp <= 0) {
+      this.dead = true;
+      Game.onDeath(this, sourceTeam);
+    }
+  }
+  drawHp(width, yOffset) {
+    if (this.hp >= this.maxHp) return;
+    const w = width;
+    const x = this.x - w / 2;
+    const y = this.y + yOffset;
+    ctx.fillStyle = "rgba(0,0,0,.55)";
+    roundRect(ctx, x, y, w, 6, 3);
+    ctx.fill();
+    ctx.fillStyle = this.team === BLUE ? "#36a3ff" : "#ff5c66";
+    roundRect(ctx, x, y, w * clamp(this.hp / this.maxHp, 0, 1), 6, 3);
+    ctx.fill();
+  }
+}
+
+class Tower extends Entity {
+  constructor(x, y, team, type, boss = false) {
+    const hp = boss ? 9800 : type === "king" ? 3300 : 1900;
+    super(x, y, team, hp);
+    this.type = type;
+    this.radius = type === "king" ? 34 : 28;
+    this.mass = 9999;
+    this.range = boss ? 255 : 178;
+    this.damage = boss ? 155 : type === "king" ? 86 : 72;
+    this.hitSpeed = boss ? .62 : .82;
+    this.cd = 0;
+    this.icon = type === "king" ? "🏰" : "🏯";
+    this.boss = boss;
+  }
+  update(dt) {
+    this.updateEffects(dt);
+    this.cd -= dt;
+    if (this.effects.stun > 0) return;
+    if (this.cd <= 0) {
+      const target = nearest(Game.enemies(this.team).filter((e) => !(e instanceof Building)), this, this.range);
+      if (target) {
+        Game.state.projectiles.push(new Projectile(this.x, this.y - 38, target, this.team, this.damage, { color: this.team === BLUE ? "#9dd7ff" : "#ff9ca2", speed: 2.6 }));
+        this.cd = this.hitSpeed;
+      }
+    }
+  }
+  draw() {
+    const flash = this.hitFlash > 0;
+    this.hitFlash = Math.max(0, this.hitFlash - 1 / 60);
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,.36)";
+    ctx.shadowBlur = 16;
+    ctx.shadowOffsetY = 8;
+    ctx.fillStyle = this.team === BLUE ? "#1b73b9" : "#b82d37";
+    roundRect(ctx, this.x - this.radius, this.y - 44, this.radius * 2, this.radius * 1.7, 8);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = flash ? .65 : 1;
+    ctx.font = `${this.type === "king" ? 54 : 44}px Arial`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(this.icon, this.x, this.y - 28);
+    if (this.boss) {
+      ctx.strokeStyle = "#ffd166";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y - 28, 42, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.restore();
+    this.drawHp(70, -76);
+  }
+}
+
+class Building extends Entity {
+  constructor(x, y, team, card) {
+    super(x, y, team, card.hp);
+    this.card = card;
+    this.radius = 27;
+    this.mass = 999;
+    this.range = card.range || 0;
+    this.damage = card.dmg || 0;
+    this.hitSpeed = card.hitSpeed || 1;
+    this.cd = 0;
+    this.life = card.lifetime || 30;
+    this.spawn = card.spawnEvery || 0;
+  }
+  update(dt) {
+    this.updateEffects(dt);
+    this.life -= dt;
+    if (this.life <= 0) this.takeDamage(99999, otherTeam(this.team));
+    if (this.spawn) {
+      this.spawn -= dt;
+      if (this.spawn <= 0 && this.card.spawnId) {
+        this.spawn = this.card.spawnEvery;
+        const spawn = CARDS[this.card.spawnId];
+        if (spawn) Game.spawnTroop(this.team, spawn, this.x + rand(-15, 15), this.y + (this.team === BLUE ? -30 : 30));
+      }
+    }
+    if (!this.damage || this.effects.stun > 0) return;
+    this.cd -= dt;
+    const target = nearest(Game.enemies(this.team).filter((e) => !(e instanceof Tower) && !(e instanceof Building)), this, this.range);
+    if (target && this.cd <= 0) {
+      Game.state.projectiles.push(new Projectile(this.x, this.y - 20, target, this.team, this.damage, { color: "#ffd166", speed: 2.5 }));
+      this.cd = this.hitSpeed;
+    }
+  }
+  draw() {
+    ctx.save();
+    ctx.fillStyle = "rgba(0,0,0,.28)";
+    ctx.beginPath();
+    ctx.ellipse(this.x, this.y + 6, this.radius, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.font = `${this.card.scale || 34}px Arial`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(this.card.icon, this.x, this.y - 10);
+    ctx.restore();
+    this.drawHp(46, -44);
+  }
+}
+
+class Unit extends Entity {
+  constructor(x, y, team, card) {
+    super(x, y, team, card.hp);
+    this.card = card;
+    this.range = card.range || 28;
+    this.damage = card.dmg || 50;
+    this.speed = card.speed || 55;
+    this.hitSpeed = card.hitSpeed || 1;
+    this.radius = clamp((card.mass || 14) * .72, 8, 34);
+    this.mass = card.mass || 12;
+    this.cd = rand(.05, .25);
+    this.anim = rand(0, 6);
+    this.target = null;
+    this.travel = 0;
+    if (Game.state.mode === "boss" && team === RED) {
+      this.hp *= 1.25;
+      this.maxHp = this.hp;
+      this.damage *= 1.25;
+    }
+  }
+  update(dt) {
+    this.updateEffects(dt);
+    this.anim += dt * 8;
+    this.cd -= dt;
+    if (this.effects.stun > 0) return;
+    this.target = this.chooseTarget();
+    if (!this.target) return;
+    const d = dist(this, this.target);
+    const reach = this.range + this.radius + this.target.radius;
+    if (d <= reach) {
+      if (this.cd <= 0) this.attack(this.target);
+      return;
+    }
+    const point = this.movePoint(this.target);
+    const angle = Math.atan2(point.y - this.y, point.x - this.x);
+    const rage = this.effects.rage > 0 ? 1.35 : 1;
+    const slow = this.effects.slow > 0 ? .55 : 1;
+    const speed = this.speed * rage * slow;
+    this.x += Math.cos(angle) * speed * dt;
+    this.y += Math.sin(angle) * speed * dt;
+    this.travel += speed * dt;
+  }
+  chooseTarget() {
+    const enemies = Game.enemies(this.team);
+    const canHit = enemies.filter((e) => !(e instanceof Projectile));
+    if (this.card.preferBuildings) {
+      const building = nearest(canHit.filter((e) => e instanceof Tower || e instanceof Building), this, 9999);
+      if (building) return building;
+    }
+    const aggro = nearest(canHit.filter((e) => !(e instanceof Tower) && !(e instanceof Building)), this, 220);
+    if (aggro) return aggro;
+    return nearest(canHit.filter((e) => e instanceof Tower || e instanceof Building), this, 9999);
+  }
+  movePoint(target) {
+    const crossing = (this.team === BLUE && this.y > RIVER_Y + 24 && target.y < RIVER_Y - 24) || (this.team === RED && this.y < RIVER_Y - 24 && target.y > RIVER_Y + 24);
+    if (!crossing) return target;
+    const bridgeX = Math.abs(this.x - BRIDGE_LEFT) < Math.abs(this.x - BRIDGE_RIGHT) ? BRIDGE_LEFT : BRIDGE_RIGHT;
+    const bridgeY = this.team === BLUE ? RIVER_Y + 28 : RIVER_Y - 28;
+    if (Math.abs(this.y - bridgeY) > 18) return { x: bridgeX, y: bridgeY };
+    return { x: bridgeX, y: RIVER_Y };
+  }
+  attack(target) {
+    let damage = this.damage;
+    if (this.card.charge && this.travel > 160) {
+      damage *= 1.85;
+      this.travel = 0;
+      Game.floatText(this.x, this.y - 42, "CHARGE", "#ffd166");
+    }
+    const cooldown = this.hitSpeed / (this.effects.rage > 0 ? 1.28 : 1);
+    if (this.range > 55 || this.card.splash) {
+      Game.state.projectiles.push(new Projectile(this.x, this.y - 22, target, this.team, damage, {
+        splash: this.card.splash || 0,
+        color: this.card.splash ? "#ffcf5f" : "#eaf6ff",
+        speed: this.card.role === "splash" ? 1.8 : 2.4
+      }));
+    } else {
+      if (this.card.splash) Game.damageArea(this.team, target.x, target.y, this.card.splash, damage, { color: "#ffd166" });
+      else target.takeDamage(damage, this.team);
+    }
+    this.cd = cooldown;
+  }
+  draw() {
+    const bounce = Math.sin(this.anim) * 3;
+    const flash = this.hitFlash > 0;
+    this.hitFlash = Math.max(0, this.hitFlash - 1 / 60);
+    ctx.save();
+    ctx.fillStyle = "rgba(0,0,0,.28)";
+    ctx.beginPath();
+    ctx.ellipse(this.x, this.y + 4, this.radius + 4, (this.radius + 4) * .48, 0, 0, Math.PI * 2);
+    ctx.fill();
+    if (this.effects.rage > 0) {
+      ctx.strokeStyle = "#d46cff";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y - 12, this.radius + 10, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    if (this.effects.stun > 0 || this.effects.slow > 0) {
+      ctx.strokeStyle = "#9de8ff";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y - 14, this.radius + 7, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = flash ? .55 : 1;
+    ctx.font = `${this.card.scale || 28}px Arial`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(this.card.icon, this.x, this.y - 14 - bounce);
+    ctx.restore();
+    this.drawHp(38, -(this.card.scale || 28) - 20);
+  }
+}
+
+class Projectile {
+  constructor(x, y, target, team, dmg, opts = {}) {
+    this.x = x;
+    this.y = y;
+    this.sx = x;
+    this.sy = y;
+    this.target = target;
+    this.team = team;
+    this.dmg = dmg;
+    this.opts = opts;
+    this.p = 0;
+    this.dead = false;
+    this.tx = target.x;
+    this.ty = target.y;
+  }
+  update(dt) {
+    if (!this.target.dead && this.target.takeDamage) {
+      this.tx = this.target.x;
+      this.ty = this.target.y;
+    }
+    this.p += (this.opts.speed || 2.2) * dt;
+    this.x = this.sx + (this.tx - this.sx) * this.p;
+    this.y = this.sy + (this.ty - this.sy) * this.p;
+    if (this.p >= 1) this.impact();
+  }
+  impact() {
+    if (this.dead) return;
+    this.dead = true;
+    if (this.opts.areaCard) Game.state.areas.push(new AreaEffect(this.tx, this.ty, this.team, this.opts.areaCard));
+    if (this.opts.splash) Game.damageArea(this.team, this.tx, this.ty, this.opts.splash, this.dmg, { color: this.opts.color, status: this.opts.status });
+    else if (this.target.takeDamage && !this.target.dead) {
+      this.target.takeDamage(this.dmg, this.team);
+      if (this.opts.status?.stun) this.target.effects.stun = Math.max(this.target.effects.stun, this.opts.status.stun);
+    }
+  }
+  draw() {
+    const h = Math.sin(clamp(this.p, 0, 1) * Math.PI) * 72;
+    ctx.save();
+    ctx.fillStyle = this.opts.color || "#ffd166";
+    ctx.shadowColor = this.opts.color || "#ffd166";
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y - h, this.opts.splash ? 8 : 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+class AreaEffect {
+  constructor(x, y, team, card) {
+    this.x = x;
+    this.y = y;
+    this.team = team;
+    this.card = card;
+    this.radius = card.radius || 80;
+    this.life = card.duration || .55;
+    this.maxLife = this.life;
+    this.tick = 0;
+  }
+  update(dt) {
+    this.life -= dt;
+    this.tick -= dt;
+    if (this.card.subtype === "poison") {
+      Game.state.entities.forEach((e) => {
+        if (e.team !== this.team && !e.dead && Math.hypot(e.x - this.x, e.y - this.y) <= this.radius + e.radius) {
+          e.takeDamage(this.card.dmg * dt, this.team);
+          e.effects.slow = Math.max(e.effects.slow, .2);
+        }
+      });
+    }
+    if (this.tick <= 0) {
+      this.tick = .5;
+      if (this.card.subtype === "rage") {
+        Game.allies(this.team).forEach((e) => {
+          if (!(e instanceof Tower) && Math.hypot(e.x - this.x, e.y - this.y) <= this.radius + e.radius) e.effects.rage = Math.max(e.effects.rage, .8);
+        });
+      }
+      if (this.card.subtype === "heal") {
+        Game.healArea(this.team, this.x, this.y, this.radius, Math.round((this.card.heal || 280) / 3));
+      }
+      if (this.card.subtype === "freeze") {
+        Game.enemies(this.team).forEach((e) => {
+          if (Math.hypot(e.x - this.x, e.y - this.y) <= this.radius + e.radius) e.effects.stun = Math.max(e.effects.stun, this.card.stun || 1.5);
+        });
+      }
+    }
+  }
+  draw() {
+    const pct = clamp(this.life / this.maxLife, 0, 1);
+    ctx.save();
+    ctx.globalAlpha = .16 + pct * .08;
+    ctx.fillStyle = this.card.color || "#fff";
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = .55;
+    ctx.strokeStyle = this.card.color || "#fff";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius * (1.02 - pct * .04), 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+class Particle {
+  constructor(x, y, text = null, color = "#ffffff", isText = false) {
+    this.x = x;
+    this.y = y;
+    this.text = text;
+    this.color = color;
+    this.isText = isText;
+    this.life = isText ? .9 : .7;
+    this.maxLife = this.life;
+    this.vx = rand(-22, 22);
+    this.vy = isText ? -34 : rand(-34, -10);
+    this.size = rand(2, 5);
+  }
+  update(dt) {
+    this.x += this.vx * dt;
+    this.y += this.vy * dt;
+    this.life -= dt;
+  }
+  draw() {
+    const alpha = clamp(this.life / this.maxLife, 0, 1);
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = this.color;
+    if (this.isText) {
+      ctx.font = "900 15px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(this.text, this.x, this.y);
+    } else {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+function nearest(list, from, range = Infinity) {
+  let best = null;
+  let bestScore = range;
+  list.forEach((item) => {
+    if (item.dead) return;
+    const d = Math.hypot(item.x - from.x, item.y - from.y);
+    if (d < bestScore) {
+      bestScore = d;
+      best = item;
+    }
+  });
+  return best;
+}
+
+function roundRect(context, x, y, w, h, r) {
+  const radius = Math.min(r, w / 2, h / 2);
+  context.beginPath();
+  context.moveTo(x + radius, y);
+  context.arcTo(x + w, y, x + w, y + h, radius);
+  context.arcTo(x + w, y + h, x, y + h, radius);
+  context.arcTo(x, y + h, x, y, radius);
+  context.arcTo(x, y, x + w, y, radius);
+  context.closePath();
+}
+
+window.App = App;
+window.Game = Game;
+App.init();
+</script>
+</body>
+</html>
