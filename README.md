@@ -40,3 +40,28 @@ Return to **GitHub → repository Settings → Pages**. Wait for the DNS check t
 ## Customize the page
 
 Edit `index.html`. Search for `EDIT:` to find the main text and links. The colors are grouped near the top under `:root`.
+
+## Add games to the Games tab
+
+1. Put each game HTML file inside the `games` folder.
+2. Open `index.html`.
+3. Find the `Games` section.
+4. Duplicate one of the `<a class="game-card">` blocks.
+5. Change the `href` to your game file, like `games/my-game.html`.
+6. Change the title and description shown on the card.
+
+Example:
+
+```html
+<a class="game-card" href="games/my-game.html">
+  <div>
+    <span class="game-kicker">New game</span>
+    <h3>My Game</h3>
+    <p>A short description of the game.</p>
+  </div>
+  <div class="game-footer">
+    <span>HTML</span>
+    <span>Play now</span>
+  </div>
+</a>
+```
