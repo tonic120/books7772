@@ -17,11 +17,11 @@
     "target": "html5game/index.html"
   },
   {
-    "title": "Hosted Game Example",
-    "description": "Use this pattern for games hosted on Netlify, itch.io, Cloudflare Pages, or Vercel.",
-    "image": "images/game-placeholder.svg",
+    "title": "Domer Puncher",
+    "description": "Hit Game!",
+    "image": "images/domer.jfif",
     "tags": ["Hosted", "External"],
     "type": "external",
-    "target": "https://example.com/your-game/"
+    "target": "domerpuncher.ra3.us"
   }
 ]
