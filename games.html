@@ -262,6 +262,14 @@
       margin-top: 1rem;
     }
 
+    .load-message {
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--surface) 82%, transparent);
+      color: var(--muted);
+    }
+
     code { color: var(--accent); }
 
     footer {
@@ -329,63 +337,12 @@
 
       <div class="library-strip">
         <p>Local folders, hosted games, and thumbnail cards can all live in this menu.</p>
-        <a class="button" href="play.html?game=sample-clicker.html&title=Sample%20Clicker">Play featured</a>
+        <a class="button" id="featuredButton" href="add-game.html">Play featured</a>
       </div>
 
-      <section class="games-grid" aria-label="Available games">
-        <!--
-          ADD A GAME:
-          1. Put your game file in /games, for example /games/html5game/index.html.
-          2. Put your picture in /images, for example /images/my-game.png.
-          3. Duplicate this card and update href, img src, title, tags, and description.
-        -->
-        <a class="game-card" href="play.html?game=sample-clicker.html&title=Sample%20Clicker">
-          <img class="game-thumb" src="images/sample-clicker-thumbnail.svg" alt="Sample Clicker thumbnail">
-          <div class="game-body">
-            <div class="game-meta">
-              <span class="pill">Clicker</span>
-              <span class="pill">Demo</span>
-            </div>
-            <h2>Sample Clicker</h2>
-            <p>A small playable example showing how games launch inside the site player.</p>
-            <span class="game-action">Launch game</span>
-          </div>
-        </a>
-
-        <a class="game-card" href="add-game.html" aria-label="Add a new game">
-          <img class="game-thumb" src="images/game-placeholder.svg" alt="Empty game slot thumbnail">
-          <div class="game-body">
-            <div class="game-meta">
-              <span class="pill">New</span>
-              <span class="pill">Slot</span>
-            </div>
-            <h2>Your Next Game</h2>
-            <p>Replace this card with your next uploaded HTML game and thumbnail.</p>
-            <span class="game-action">Open builder</span>
-          </div>
-        </a>
-
-        <a class="game-card" href="external-play.html?game=domerpuncher.ra3.us&amp;title=My%20Hosted%20Game">
-          <img class="game-thumb" src="images/domer.jfif" alt="My Hosted Game thumbnail">
-          <div class="game-body">
-            <div class="game-meta">
-              <span class="pill">Hosted</span><span class="pill">HTML</span>
-            </div>
-            <h2>My Hosted Game</h2>
-            <p>Domer puncher hit game!</p>
-            <span class="game-action">Launch game</span>
-          </div>
-        </a>
-
-      <section class="saved-section" id="savedSection" hidden>
-        <div class="section-bar">
-          <div>
-            <h2>Saved preview cards</h2>
-            <p>Cards added from this browser with the Add Game page.</p>
-          </div>
-          <button class="button" type="button" id="clearSavedButton">Clear previews</button>
-        </div>
-        <div class="games-grid" id="savedGamesGrid"></div>
+      <section aria-label="Available games">
+        <div class="load-message" id="loadMessage">Loading game database...</div>
+        <div class="games-grid" id="gamesGrid"></div>
       </section>
     </div>
   </main>
@@ -396,11 +353,10 @@
 
   <script>
     const themeButton = document.querySelector("[data-theme-toggle]");
-    const savedSection = document.querySelector("#savedSection");
-    const savedGamesGrid = document.querySelector("#savedGamesGrid");
-    const clearSavedButton = document.querySelector("#clearSavedButton");
+    const gamesGrid = document.querySelector("#gamesGrid");
+    const loadMessage = document.querySelector("#loadMessage");
+    const featuredButton = document.querySelector("#featuredButton");
     const savedTheme = localStorage.getItem("books777-theme");
-    const STORAGE_KEY = "books777-custom-games";
 
     function escapeHtml(value) {
       return String(value)
@@ -418,18 +374,8 @@
       return `play.html?game=${encodeURIComponent(game.target)}&title=${encodeURIComponent(game.title)}`;
     }
 
-    function getSavedGames() {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      } catch {
-        return [];
-      }
-    }
-
-    function renderSavedGames() {
-      const games = getSavedGames();
-      savedSection.hidden = games.length === 0;
-      savedGamesGrid.innerHTML = games.map((game) => {
+    function renderGames(games) {
+      gamesGrid.innerHTML = games.map((game) => {
         const tags = (game.tags || []).map((tag) => `<span class="pill">${escapeHtml(tag)}</span>`).join("");
         const image = game.image || "images/game-placeholder.svg";
         return `<a class="game-card" href="${escapeHtml(buildHref(game))}">
@@ -444,10 +390,24 @@
       }).join("");
     }
 
-    clearSavedButton.addEventListener("click", () => {
-      localStorage.removeItem(STORAGE_KEY);
-      renderSavedGames();
-    });
+    async function loadGames() {
+      try {
+        const response = await fetch("games-data.json", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("Could not load games-data.json");
+        }
+        const games = await response.json();
+        const gameList = Array.isArray(games) ? games : [];
+        renderGames(gameList);
+        const featuredGame = gameList.find((game) => game.featured) || gameList[0];
+        if (featuredGame) {
+          featuredButton.href = buildHref(featuredGame);
+        }
+        loadMessage.hidden = true;
+      } catch (error) {
+        loadMessage.textContent = "The game database could not load. Check games-data.json for missing commas or invalid JSON.";
+      }
+    }
 
     if (savedTheme === "light") {
       document.body.classList.add("light");
@@ -465,7 +425,7 @@
     });
 
     updateThemeButton();
-    renderSavedGames();
+    loadGames();
     document.querySelector("#year").textContent = new Date().getFullYear();
   </script>
 </body>

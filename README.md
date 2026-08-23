@@ -2,31 +2,105 @@
 
 This folder is ready to publish with GitHub Pages. The `CNAME` file already contains `books777.ra3.us`.
 
-## Site files
+## Main Files
 
 | File or folder | What it does |
 | --- | --- |
-| `index.html` | Main home page for Books777 Arcade. |
-| `games.html` | Dedicated games menu with game cards and pictures. |
-| `play.html` | Game player page with the hover sidebar menu. |
-| `external-play.html` | Player page for games hosted on another website. |
-| `add-game.html` | Form for making game cards from a link and image. |
-| `games/` | Put your HTML game files here. |
-| `images/` | Put game thumbnails or pictures here. |
-| `CNAME` | Keeps the custom domain connected to GitHub Pages. |
+| `index.html` | Home page. |
+| `games.html` | Games menu. It auto-loads cards from `games-data.json`. |
+| `games-data.json` | The editable game database. Add games here. |
+| `add-game.html` | Helper page that generates a `games-data.json` entry. |
+| `play.html` | Player page for local games inside the `games/` folder. |
+| `external-play.html` | Player page for games hosted on another site. |
+| `games/` | Put local HTML game files and folders here. |
+| `images/` | Put thumbnails, cover images, and screenshots here. |
 
-## Add a game folder like `html5game`
+## Add Games With The Database
 
-GitHub folders are created automatically when files exist inside them. You do not need a separate "make folder" button.
+Edit `games-data.json`. Each game is one object inside the array.
 
-Option 1: upload a folder
+Local single-file game:
 
-1. On GitHub, open your repository.
+```json
+{
+  "title": "My Game",
+  "description": "A short description.",
+  "image": "images/my-game.png",
+  "tags": ["Action", "HTML"],
+  "type": "local",
+  "target": "my-game.html"
+}
+```
+
+Local folder game:
+
+```json
+{
+  "title": "HTML5 Game",
+  "description": "A game exported as a folder.",
+  "image": "images/html5game.png",
+  "tags": ["Folder", "HTML5"],
+  "type": "local",
+  "target": "html5game/index.html"
+}
+```
+
+Hosted game:
+
+```json
+{
+  "title": "Hosted Game",
+  "description": "A game hosted somewhere else.",
+  "image": "images/hosted-game.png",
+  "tags": ["Hosted", "External"],
+  "type": "external",
+  "target": "https://your-game-host.com/"
+}
+```
+
+The games page updates automatically after you commit the changed `games-data.json`.
+
+## Use The Add Game Helper
+
+Open `add-game.html`, enter the game link and image, then copy the generated database entry.
+
+Paste the entry into `games-data.json` between the square brackets:
+
+```json
+[
+  {
+    "title": "First Game",
+    "description": "Already here.",
+    "image": "images/first.png",
+    "tags": ["Demo"],
+    "type": "local",
+    "target": "first.html"
+  },
+  {
+    "title": "New Game",
+    "description": "Paste new entries like this.",
+    "image": "images/new-game.png",
+    "tags": ["New"],
+    "type": "local",
+    "target": "new-game.html"
+  }
+]
+```
+
+Remember to put a comma between entries, but not after the final entry.
+
+## Add A Folder Like `html5game`
+
+GitHub creates folders when files exist inside them.
+
+To upload a folder:
+
+1. Open your repository on GitHub.
 2. Choose **Add file -> Upload files**.
 3. Drag the whole folder into the upload box.
 4. Commit the upload.
 
-For this arcade, put exported game folders inside `games/`.
+For this site, exported game folders should go inside `games/`.
 
 Example:
 
@@ -36,113 +110,24 @@ games/html5game/data.js
 games/html5game/assets/player.png
 ```
 
-The card should launch:
+Then use this in `games-data.json`:
 
-```html
-play.html?game=html5game/index.html&title=HTML5%20Game
+```json
+"type": "local",
+"target": "html5game/index.html"
 ```
 
-Option 2: create a file path
+## Hosted Games
 
-When creating a new file on GitHub, type the folder path in the file name field:
+For huge games, host the game on Netlify, itch.io, Cloudflare Pages, or Vercel, then add it as:
 
-```text
-games/html5game/index.html
+```json
+"type": "external",
+"target": "https://your-game-host.com/"
 ```
 
-GitHub will create the folders when the file is committed.
+If an embedded hosted game shows a blank screen, that host is blocking iframe embeds. The player page includes an "Open game directly" button for that case.
 
-## Add a new game
+## Publish Updates
 
-Fastest way:
-
-1. Open `add-game.html` in the site.
-2. Enter a game link or local game path.
-3. Enter an image URL or image path.
-4. Save the preview card or copy the generated card HTML.
-
-Manual way:
-
-1. Put your game file or game folder in the `games` folder.
-   Example: `games/my-game.html` or `games/html5game/index.html`
-2. Put your picture in the `images` folder.
-   Example: `images/my-game.png`
-3. Open `games.html`.
-4. Duplicate one of the `<a class="game-card">` blocks.
-5. Change the card link, image, title, tags, and description.
-
-Example card:
-
-```html
-<a class="game-card" href="play.html?game=my-game.html&title=My%20Game">
-  <img class="game-thumb" src="images/my-game.png" alt="My Game thumbnail">
-  <div class="game-body">
-    <div class="game-meta">
-      <span class="pill">Action</span>
-      <span class="pill">HTML</span>
-    </div>
-    <h2>My Game</h2>
-    <p>A short description of the game.</p>
-    <span class="game-action">Launch game</span>
-  </div>
-</a>
-```
-
-Use a simple path for games, like `my-game.html` or `html5game/index.html`. The player page loads files from inside the `games` folder.
-
-## Game sidebar
-
-Game cards should open through `play.html`, like this:
-
-```html
-play.html?game=my-game.html&title=My%20Game
-```
-
-That loads the game inside the player page. When the mouse moves to the left side of the screen, the sidebar opens with links back to the games menu and home page.
-
-## Load a game hosted somewhere else
-
-If a game is too large for GitHub Pages, host it on another static/game host first. Good options are itch.io, Netlify, Cloudflare Pages, or Vercel.
-
-After the game is live, copy its HTTPS URL. Then add a card in `games.html` that opens `external-play.html`.
-
-Example:
-
-```html
-<a class="game-card" href="external-play.html?url=https%3A%2F%2Fyour-game-host.com%2F&title=My%20Hosted%20Game">
-  <img class="game-thumb" src="images/my-game.png" alt="My Hosted Game thumbnail">
-  <div class="game-body">
-    <div class="game-meta">
-      <span class="pill">Hosted</span>
-      <span class="pill">External</span>
-    </div>
-    <h2>My Hosted Game</h2>
-    <p>This game is hosted somewhere else but loaded inside Books777 Arcade.</p>
-    <span class="game-action">Launch hosted game</span>
-  </div>
-</a>
-```
-
-The `url=` part must be URL-encoded. For example:
-
-```text
-https://your-game-host.com/
-```
-
-becomes:
-
-```text
-https%3A%2F%2Fyour-game-host.com%2F
-```
-
-If the embedded game shows a blank screen, the other host is blocking iframe embeds. In that case, use the "Open game directly" button or move the game to a host that allows iframe embedding.
-
-## Light and dark mode
-
-The site starts in dark mode with blue accents. Visitors can press the light mode button, and the choice is remembered on their device.
-
-## Publish updates
-
-Upload the contents of this folder to your GitHub repository and commit the changes. GitHub Pages will rebuild the site automatically.
-
-If you add new game or image files later, upload those new files and the edited `games.html`.
+Upload the changed files to GitHub and commit them. GitHub Pages will rebuild the site automatically.

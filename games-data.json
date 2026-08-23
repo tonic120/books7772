@@ -1,0 +1,27 @@
+[
+  {
+    "title": "Sample Clicker",
+    "description": "A small playable example showing how games launch inside the site player.",
+    "image": "images/sample-clicker-thumbnail.svg",
+    "tags": ["Clicker", "Demo"],
+    "type": "local",
+    "target": "sample-clicker.html",
+    "featured": true
+  },
+  {
+    "title": "Folder Game Example",
+    "description": "Use this pattern for uploaded folders like games/html5game/index.html.",
+    "image": "images/game-placeholder.svg",
+    "tags": ["Folder", "HTML5"],
+    "type": "local",
+    "target": "html5game/index.html"
+  },
+  {
+    "title": "Hosted Game Example",
+    "description": "Use this pattern for games hosted on Netlify, itch.io, Cloudflare Pages, or Vercel.",
+    "image": "images/game-placeholder.svg",
+    "tags": ["Hosted", "External"],
+    "type": "external",
+    "target": "https://example.com/your-game/"
+  }
+]

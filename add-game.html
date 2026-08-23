@@ -282,7 +282,7 @@
         <div>
           <div class="eyebrow">Game card builder</div>
           <h1>Add a game</h1>
-          <p>Enter a hosted game URL or a local folder path, add a picture, then save it to the games page preview or copy the card into <code>games.html</code>.</p>
+          <p>Enter a hosted game URL or local folder path, then copy the generated database entry into <code>games-data.json</code>.</p>
         </div>
         <a class="button" href="games.html">View games</a>
       </div>
@@ -311,9 +311,8 @@
             <textarea id="descriptionInput">A playable game added to Books777 Arcade.</textarea>
           </label>
           <div class="actions">
-            <button class="button primary" type="submit">Save preview card</button>
-            <button class="button" type="button" id="copyButton">Copy card HTML</button>
-            <button class="button" type="button" id="clearButton">Clear saved cards</button>
+            <button class="button primary" type="submit">Generate entry</button>
+            <button class="button" type="button" id="copyButton">Copy database entry</button>
           </div>
           <div class="status" id="status" aria-live="polite"></div>
         </form>
@@ -330,7 +329,7 @@
             </div>
           </a>
 
-          <h2>Generated card code</h2>
+          <h2>Database entry</h2>
           <textarea id="codeOutput" readonly></textarea>
         </section>
       </div>
@@ -338,7 +337,6 @@
   </main>
 
   <script>
-    const STORAGE_KEY = "books777-custom-games";
     const form = document.querySelector("#gameForm");
     const statusBox = document.querySelector("#status");
     const titleInput = document.querySelector("#titleInput");
@@ -348,7 +346,6 @@
     const descriptionInput = document.querySelector("#descriptionInput");
     const codeOutput = document.querySelector("#codeOutput");
     const copyButton = document.querySelector("#copyButton");
-    const clearButton = document.querySelector("#clearButton");
     const previewCard = document.querySelector("#previewCard");
     const previewImage = document.querySelector("#previewImage");
     const previewTags = document.querySelector("#previewTags");
@@ -413,18 +410,17 @@
       return tags.map((tag) => `<span class="pill">${escapeHtml(tag)}</span>`).join("");
     }
 
-    function buildCardHtml(entry) {
-      return `<a class="game-card" href="${escapeHtml(buildHref(entry))}">
-  <img class="game-thumb" src="${escapeHtml(entry.image)}" alt="${escapeHtml(entry.title)} thumbnail">
-  <div class="game-body">
-    <div class="game-meta">
-      ${renderTags(entry.tags).replaceAll("\n", "\n      ")}
-    </div>
-    <h2>${escapeHtml(entry.title)}</h2>
-    <p>${escapeHtml(entry.description)}</p>
-    <span class="game-action">Launch game</span>
-  </div>
-</a>`;
+    function buildDatabaseEntry(entry) {
+      const databaseEntry = {
+        title: entry.title,
+        description: entry.description,
+        image: entry.image,
+        tags: entry.tags,
+        type: entry.type,
+        target: entry.target
+      };
+
+      return JSON.stringify(databaseEntry, null, 2);
     }
 
     function updatePreview() {
@@ -435,34 +431,19 @@
       previewTags.innerHTML = renderTags(entry.tags);
       previewTitle.textContent = entry.title;
       previewDescription.textContent = entry.description;
-      codeOutput.value = buildCardHtml(entry);
-    }
-
-    function getSavedGames() {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      } catch {
-        return [];
-      }
+      codeOutput.value = buildDatabaseEntry(entry);
     }
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      const games = getSavedGames();
-      games.push(getEntry());
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(games));
-      statusBox.textContent = "Saved. Open the Games page to see it on this browser.";
+      updatePreview();
+      statusBox.textContent = "Entry generated. Add it to games-data.json and commit the file.";
     });
 
     copyButton.addEventListener("click", async () => {
       updatePreview();
       await navigator.clipboard.writeText(codeOutput.value);
-      statusBox.textContent = "Copied card HTML.";
-    });
-
-    clearButton.addEventListener("click", () => {
-      localStorage.removeItem(STORAGE_KEY);
-      statusBox.textContent = "Saved preview cards cleared.";
+      statusBox.textContent = "Copied database entry.";
     });
 
     [titleInput, gameInput, imageInput, tagsInput, descriptionInput].forEach((input) => {
