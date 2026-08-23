@@ -11,7 +11,7 @@
   {
     "title": "Retro Bowl",
     "description": "Footballs and balls",
-    "image": "games/retrobowl/favicon.ico",
+    "image": "games/retrobowl/img/icon.jpg",
     "tags": ["Folder", "HTML5"],
     "type": "local",
     "target": "retrobowl/index.html"
