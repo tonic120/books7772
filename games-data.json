@@ -9,12 +9,12 @@
     "featured": true
   },
   {
-    "title": "Folder Game Example",
-    "description": "Use this pattern for uploaded folders like games/html5game/index.html.",
-    "image": "images/game-placeholder.svg",
+    "title": "Retro Bowl",
+    "description": "Footballs and balls",
+    "image": "games/retrobowl/favicon.ico",
     "tags": ["Folder", "HTML5"],
     "type": "local",
-    "target": "html5game/index.html"
+    "target": "retrobowl/index.html"
   },
   {
     "title": "Domer Puncher",
