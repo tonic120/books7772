@@ -22,6 +22,6 @@
     "image": "images/domer.jfif",
     "tags": ["Hosted", "External"],
     "type": "external",
-    "target": "domerpuncher.ra3.us"
+    "target": "https://domerpuncher.ra3.us"
   }
 ]
