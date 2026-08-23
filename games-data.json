@@ -17,6 +17,14 @@
     "target": "retrobowl/index.html"
   },
   {
+    "title": "Retro Bowl College",
+    "description": "Footballs and balls and colleges",
+    "image": "games/retrobowl college/unnamed.png",
+    "tags": ["Folder", "HTML5"],
+    "type": "local",
+    "target": "games/retrobowl college/index.html"
+  },
+  {
     "title": "Domer Puncher",
     "description": "Hit Game!",
     "image": "images/domer.jfif",
