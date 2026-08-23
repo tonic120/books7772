@@ -191,6 +191,7 @@
     <div class="error-card">
       <h1>Game could not load</h1>
       <p>Use a path like <strong>my-game.html</strong> or <strong>html5game/index.html</strong> inside the games folder.</p>
+      <p id="pathHelp"></p>
       <p><a href="games.html">Back to games</a></p>
     </div>
   </section>
@@ -199,18 +200,40 @@
     const params = new URLSearchParams(window.location.search);
     const requestedGame = params.get("game") || "sample-clicker.html";
     const requestedTitle = params.get("title") || "Sample Clicker";
-    const validGameName = /^(?!.*\.\.)(?!\/)[a-z0-9][a-z0-9._/-]*\.html$/i.test(requestedGame);
+    const normalizedGame = normalizeGamePath(requestedGame);
+    const validGameName = /^(?!.*\.\.)(?!\/)[a-z0-9][a-z0-9._/-]*\.html$/i.test(normalizedGame);
     const frame = document.querySelector("#gameFrame");
     const errorView = document.querySelector("#errorView");
+    const pathHelp = document.querySelector("#pathHelp");
     const themeButton = document.querySelector("[data-theme-toggle]");
 
+    function normalizeGamePath(value) {
+      let game = String(value || "")
+        .trim()
+        .replaceAll("\\", "/")
+        .replace(/^\/+/, "")
+        .replace(/^games\//i, "")
+        .replace(/\/+$/, "");
+
+      if (!game) {
+        return "sample-clicker.html";
+      }
+
+      if (!game.toLowerCase().endsWith(".html")) {
+        game = `${game}/index.html`;
+      }
+
+      return game;
+    }
+
     if (validGameName) {
-      frame.src = `games/${requestedGame}`;
+      frame.src = `games/${normalizedGame}`;
       document.querySelector("#gameTitle").textContent = requestedTitle;
       document.title = `${requestedTitle} | Books777 Arcade`;
     } else {
       frame.style.display = "none";
       errorView.style.display = "grid";
+      pathHelp.textContent = `The path "${requestedGame}" could not be used. Try something like retrobowl/index.html.`;
     }
 
     const savedTheme = localStorage.getItem("books777-theme");

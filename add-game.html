@@ -374,8 +374,22 @@
 
       return {
         type: "local",
-        target: target.replace(/^\/+/, "").replace(/^games\//i, "")
+        target: normalizeLocalPath(target)
       };
+    }
+
+    function normalizeLocalPath(value) {
+      let target = value
+        .replaceAll("\\", "/")
+        .replace(/^\/+/, "")
+        .replace(/^games\//i, "")
+        .replace(/\/+$/, "");
+
+      if (target && !target.toLowerCase().endsWith(".html")) {
+        target = `${target}/index.html`;
+      }
+
+      return target;
     }
 
     function getTags() {
