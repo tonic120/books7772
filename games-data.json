@@ -22,7 +22,7 @@
     "image": "games/retrobowl college/unnamed.png",
     "tags": ["Folder", "HTML5"],
     "type": "local",
-    "target": "games/retrobowl college/index.html"
+    "target": "retrobowl college/index.html"
   },
   {
     "title": "Domer Puncher",
