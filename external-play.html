@@ -163,6 +163,22 @@
       box-shadow: var(--shadow);
     }
 
+    .blocked-note.dismissed { display: none; }
+
+    .blocked-note button {
+      float: right;
+      width: 28px;
+      height: 28px;
+      margin: -0.25rem -0.25rem 0.4rem 0.6rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-strong);
+      color: var(--text);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 900;
+    }
+
     .blocked-note a { color: var(--accent); font-weight: 900; }
   </style>
 </head>
@@ -184,7 +200,8 @@
     <div class="hint">If the frame stays blank, the host is blocking embedding. Use a host that allows iframe embeds.</div>
   </aside>
 
-  <div class="blocked-note">
+  <div class="blocked-note" id="blockedNote">
+    <button type="button" id="dismissNote" aria-label="Dismiss message">x</button>
     Blank screen? The external host may block iframe loading. <a id="backupLink" href="#" target="_blank" rel="noreferrer">Open it directly</a>.
   </div>
 
@@ -194,6 +211,8 @@
     const requestedTitle = params.get("title") || "External Game";
     const frame = document.querySelector("#gameFrame");
     const themeButton = document.querySelector("[data-theme-toggle]");
+    const blockedNote = document.querySelector("#blockedNote");
+    const dismissNote = document.querySelector("#dismissNote");
     const directLinks = [document.querySelector("#openDirectLink"), document.querySelector("#backupLink")];
 
     function isAllowedUrl(value) {
@@ -220,6 +239,15 @@
 
     document.querySelector("#gameTitle").textContent = requestedTitle;
     document.title = `${requestedTitle} | Books777 Arcade`;
+
+    if (localStorage.getItem("books777-hide-hosted-note") === "yes") {
+      blockedNote.classList.add("dismissed");
+    }
+
+    dismissNote.addEventListener("click", () => {
+      blockedNote.classList.add("dismissed");
+      localStorage.setItem("books777-hide-hosted-note", "yes");
+    });
 
     const savedTheme = localStorage.getItem("books777-theme");
 

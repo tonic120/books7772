@@ -190,7 +190,7 @@
   <section class="error" id="errorView" aria-live="polite">
     <div class="error-card">
       <h1>Game could not load</h1>
-      <p>Use a simple file name like <strong>my-game.html</strong> and put it inside the games folder.</p>
+      <p>Use a path like <strong>my-game.html</strong> or <strong>html5game/index.html</strong> inside the games folder.</p>
       <p><a href="games.html">Back to games</a></p>
     </div>
   </section>
@@ -199,7 +199,7 @@
     const params = new URLSearchParams(window.location.search);
     const requestedGame = params.get("game") || "sample-clicker.html";
     const requestedTitle = params.get("title") || "Sample Clicker";
-    const validGameName = /^[a-z0-9][a-z0-9._-]*\.html$/i.test(requestedGame);
+    const validGameName = /^(?!.*\.\.)(?!\/)[a-z0-9][a-z0-9._/-]*\.html$/i.test(requestedGame);
     const frame = document.querySelector("#gameFrame");
     const errorView = document.querySelector("#errorView");
     const themeButton = document.querySelector("[data-theme-toggle]");

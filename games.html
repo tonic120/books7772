@@ -170,6 +170,30 @@
       color: var(--muted);
     }
 
+    .library-strip,
+    .section-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .library-strip {
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--surface) 82%, transparent);
+    }
+
+    .library-strip p,
+    .section-bar p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .section-bar h2 { margin: 0; }
+
     .games-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -234,16 +258,10 @@
       font-weight: 900;
     }
 
-    .add-panel {
+    .saved-section {
       margin-top: 1rem;
-      padding: 1.2rem;
-      border: 1px dashed color-mix(in srgb, var(--accent) 50%, var(--line));
-      border-radius: 8px;
-      background: color-mix(in srgb, var(--surface) 76%, transparent);
     }
 
-    .add-panel h2 { margin: 0 0 0.45rem; }
-    .add-panel p { margin: 0; color: var(--muted); }
     code { color: var(--accent); }
 
     footer {
@@ -291,6 +309,7 @@
         <ul class="nav-links">
           <li><a href="index.html">Home</a></li>
           <li><a class="active" href="games.html">Games</a></li>
+          <li><a href="add-game.html">Add Game</a></li>
         </ul>
         <button class="theme-toggle" type="button" data-theme-toggle>Light mode</button>
       </div>
@@ -303,15 +322,20 @@
         <div>
           <div class="eyebrow">Game library</div>
           <h1>Games</h1>
-          <p>Every game gets its own card, picture, tags, and launch button. Add new game files in the <code>games</code> folder and keep the menu clean here.</p>
+          <p>Pick a game and launch it through the arcade player.</p>
         </div>
-        <a class="button primary" href="play.html?game=sample-clicker.html&title=Sample%20Clicker">Play featured</a>
+        <a class="button primary" href="add-game.html">Add game</a>
+      </div>
+
+      <div class="library-strip">
+        <p>Local folders, hosted games, and thumbnail cards can all live in this menu.</p>
+        <a class="button" href="play.html?game=sample-clicker.html&title=Sample%20Clicker">Play featured</a>
       </div>
 
       <section class="games-grid" aria-label="Available games">
         <!--
           ADD A GAME:
-          1. Put your game file in /games, for example /games/my-game.html.
+          1. Put your game file in /games, for example /games/html5game/index.html.
           2. Put your picture in /images, for example /images/my-game.png.
           3. Duplicate this card and update href, img src, title, tags, and description.
         -->
@@ -328,7 +352,7 @@
           </div>
         </a>
 
-        <a class="game-card" href="#" aria-label="Empty game card template">
+        <a class="game-card" href="add-game.html" aria-label="Add a new game">
           <img class="game-thumb" src="images/game-placeholder.svg" alt="Empty game slot thumbnail">
           <div class="game-body">
             <div class="game-meta">
@@ -337,11 +361,11 @@
             </div>
             <h2>Your Next Game</h2>
             <p>Replace this card with your next uploaded HTML game and thumbnail.</p>
-            <span class="game-action">Add game link</span>
+            <span class="game-action">Open builder</span>
           </div>
         </a>
 
-        <a class="game-card" href="external-play.html?url=https%3A%2F%2Fdomerpuncher.ra3.us%2F&title=My%20Game">
+        <a class="game-card" href="external-play.html?url=https%3A%2F%2Fexample.com%2Fyour-game%2F&title=Hosted%20Game">
           <img class="game-thumb" src="images/game-placeholder.svg" alt="Hosted game thumbnail">
           <div class="game-body">
             <div class="game-meta">
@@ -355,11 +379,16 @@
         </a>
       </section>
 
-      <aside class="add-panel">
-        <h2>Quick add pattern</h2>
-        <p>Use <code>href="play.html?game=my-game.html&amp;title=My%20Game"</code> on the card, put the game at <code>games/my-game.html</code>, and put the picture at <code>images/my-game.png</code>.</p>
-        <p>For a game hosted somewhere else, use <code>href="external-play.html?url=https%3A%2F%2Fyour-game-host.com%2F&amp;title=My%20Game"</code>.</p>
-      </aside>
+      <section class="saved-section" id="savedSection" hidden>
+        <div class="section-bar">
+          <div>
+            <h2>Saved preview cards</h2>
+            <p>Cards added from this browser with the Add Game page.</p>
+          </div>
+          <button class="button" type="button" id="clearSavedButton">Clear previews</button>
+        </div>
+        <div class="games-grid" id="savedGamesGrid"></div>
+      </section>
     </div>
   </main>
 
@@ -369,7 +398,58 @@
 
   <script>
     const themeButton = document.querySelector("[data-theme-toggle]");
+    const savedSection = document.querySelector("#savedSection");
+    const savedGamesGrid = document.querySelector("#savedGamesGrid");
+    const clearSavedButton = document.querySelector("#clearSavedButton");
     const savedTheme = localStorage.getItem("books777-theme");
+    const STORAGE_KEY = "books777-custom-games";
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function buildHref(game) {
+      if (game.type === "external") {
+        return `external-play.html?url=${encodeURIComponent(game.target)}&title=${encodeURIComponent(game.title)}`;
+      }
+      return `play.html?game=${encodeURIComponent(game.target)}&title=${encodeURIComponent(game.title)}`;
+    }
+
+    function getSavedGames() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function renderSavedGames() {
+      const games = getSavedGames();
+      savedSection.hidden = games.length === 0;
+      savedGamesGrid.innerHTML = games.map((game) => {
+        const tags = (game.tags || []).map((tag) => `<span class="pill">${escapeHtml(tag)}</span>`).join("");
+        const image = game.image || "images/game-placeholder.svg";
+        return `<a class="game-card" href="${escapeHtml(buildHref(game))}">
+          <img class="game-thumb" src="${escapeHtml(image)}" alt="${escapeHtml(game.title)} thumbnail">
+          <div class="game-body">
+            <div class="game-meta">${tags}</div>
+            <h2>${escapeHtml(game.title)}</h2>
+            <p>${escapeHtml(game.description || "A playable game added to Books777 Arcade.")}</p>
+            <span class="game-action">Launch game</span>
+          </div>
+        </a>`;
+      }).join("");
+    }
+
+    clearSavedButton.addEventListener("click", () => {
+      localStorage.removeItem(STORAGE_KEY);
+      renderSavedGames();
+    });
 
     if (savedTheme === "light") {
       document.body.classList.add("light");
@@ -387,6 +467,7 @@
     });
 
     updateThemeButton();
+    renderSavedGames();
     document.querySelector("#year").textContent = new Date().getFullYear();
   </script>
 </body>

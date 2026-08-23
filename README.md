@@ -10,14 +10,61 @@ This folder is ready to publish with GitHub Pages. The `CNAME` file already cont
 | `games.html` | Dedicated games menu with game cards and pictures. |
 | `play.html` | Game player page with the hover sidebar menu. |
 | `external-play.html` | Player page for games hosted on another website. |
+| `add-game.html` | Form for making game cards from a link and image. |
 | `games/` | Put your HTML game files here. |
 | `images/` | Put game thumbnails or pictures here. |
 | `CNAME` | Keeps the custom domain connected to GitHub Pages. |
 
+## Add a game folder like `html5game`
+
+GitHub folders are created automatically when files exist inside them. You do not need a separate "make folder" button.
+
+Option 1: upload a folder
+
+1. On GitHub, open your repository.
+2. Choose **Add file -> Upload files**.
+3. Drag the whole folder into the upload box.
+4. Commit the upload.
+
+For this arcade, put exported game folders inside `games/`.
+
+Example:
+
+```text
+games/html5game/index.html
+games/html5game/data.js
+games/html5game/assets/player.png
+```
+
+The card should launch:
+
+```html
+play.html?game=html5game/index.html&title=HTML5%20Game
+```
+
+Option 2: create a file path
+
+When creating a new file on GitHub, type the folder path in the file name field:
+
+```text
+games/html5game/index.html
+```
+
+GitHub will create the folders when the file is committed.
+
 ## Add a new game
 
-1. Put your game file in the `games` folder.
-   Example: `games/my-game.html`
+Fastest way:
+
+1. Open `add-game.html` in the site.
+2. Enter a game link or local game path.
+3. Enter an image URL or image path.
+4. Save the preview card or copy the generated card HTML.
+
+Manual way:
+
+1. Put your game file or game folder in the `games` folder.
+   Example: `games/my-game.html` or `games/html5game/index.html`
 2. Put your picture in the `images` folder.
    Example: `images/my-game.png`
 3. Open `games.html`.
@@ -41,7 +88,7 @@ Example card:
 </a>
 ```
 
-Use a simple file name for games, like `my-game.html`. The player page accepts game files inside the `games` folder.
+Use a simple path for games, like `my-game.html` or `html5game/index.html`. The player page loads files from inside the `games` folder.
 
 ## Game sidebar
 
