@@ -328,19 +328,6 @@
           </div>
         </a>
 
-        <a class="game-card" href="https://sweet-treacle-d4ff6a.netlify.app" target="_blank">
-          <img class="game-thumb" src="images/sample-clicker-thumbnail.svg" alt="Sample Clicker thumbnail">
-          <div class="game-body">
-            <div class="game-meta">
-              <span class="pill">Clicker</span>
-              <span class="pill">Demo</span>
-            </div>
-            <h2>Sample Clicker</h2>
-            <p>A small playable example showing how games launch inside the site player.</p>
-            <span class="game-action">Launch game</span>
-          </div>
-        </a>
-
         <a class="game-card" href="#" aria-label="Empty game card template">
           <img class="game-thumb" src="images/game-placeholder.svg" alt="Empty game slot thumbnail">
           <div class="game-body">
@@ -353,11 +340,25 @@
             <span class="game-action">Add game link</span>
           </div>
         </a>
+
+        <a class="game-card" href="external-play.html?url=https%3A%2F%2Fexample.com%2Fyour-game%2F&title=Hosted%20Game">
+          <img class="game-thumb" src="images/game-placeholder.svg" alt="Hosted game thumbnail">
+          <div class="game-body">
+            <div class="game-meta">
+              <span class="pill">Hosted</span>
+              <span class="pill">External</span>
+            </div>
+            <h2>Hosted Game</h2>
+            <p>Use this card for a game hosted on another site, then load it inside Books777 Arcade.</p>
+            <span class="game-action">Launch hosted game</span>
+          </div>
+        </a>
       </section>
 
       <aside class="add-panel">
         <h2>Quick add pattern</h2>
         <p>Use <code>href="play.html?game=my-game.html&amp;title=My%20Game"</code> on the card, put the game at <code>games/my-game.html</code>, and put the picture at <code>images/my-game.png</code>.</p>
+        <p>For a game hosted somewhere else, use <code>href="external-play.html?url=https%3A%2F%2Fyour-game-host.com%2F&amp;title=My%20Game"</code>.</p>
       </aside>
     </div>
   </main>
