@@ -13,6 +13,7 @@ This folder is ready to publish with GitHub Pages. The `CNAME` file already cont
 | `external-play.html` | Player page for games hosted on another site. |
 | `games/` | Put local HTML game files and folders here. |
 | `images/` | Put thumbnails, cover images, and screenshots here. |
+| `styles/arcade.css` | Shared look for every page: colors, fonts, buttons, and the light/dark themes. |
 
 ## Add Games With The Database
 
